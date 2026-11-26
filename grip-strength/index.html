@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
   <title>握力の平均は？年代別・男女別の早見表と、上位何%かの目安｜N%</title>
   <meta name="description" content="握力の平均を年代別・男女別の早見表で紹介。性別・年齢・握力を入れると、同年代の中で上位何%かの目安がわかる計算ツール付き。スポーツ庁「令和7年度体力・運動能力調査」をもとにした推定です。">
   <link rel="canonical" href="https://flangt.github.io/grip-strength/">
@@ -13,82 +14,293 @@
   <meta property="og:description" content="握力の平均を年代別・男女別の早見表で紹介。性別・年齢・握力を入れると、同年代の中で上位何%かの目安がわかる計算ツール付き。スポーツ庁「令和7年度体力・運動能力調査」をもとにした推定です。">
   <meta property="og:url" content="https://flangt.github.io/grip-strength/">
   <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&text=N%25&display=swap">
   <style>
-    :root { color-scheme: light dark; }
+    /* 色の決まり（B案：データ図鑑）。常に明るい配色に固定し、ダークモードでも切り替えない */
+    :root {
+      color-scheme: light;
+      --paper: #F6F3EC;  /* 背景の紙 */
+      --ink: #1A1A1A;    /* 文字（紙の上で 15.7:1） */
+      --red: #E8202A;    /* 差し色。大きい数字・図の塗り・アイコンに使う（紙の上で 4.06:1 なので小さい文字には使わない） */
+      --red-text: #C8161F; /* 16px未満の赤い文字（紙の上で 5.28:1、白の上で 5.85:1） */
+      --sub: #6B655E;    /* 補助文字（紙の上で 5.19:1、白の上で 5.76:1） */
+      --rule: #DDD6CA;   /* 罫線 */
+      --white: #FFFFFF;  /* 図や入力欄の面 */
+      --radius: 4px;     /* 角丸は小さく */
+    }
     * { box-sizing: border-box; }
+    html { background: var(--paper); }
     body {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 40px 16px 64px;
-      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      font-weight: 400;
       line-height: 1.9;
-      color: #2b2b2b;
-      background: #ffffff;
       overflow-wrap: anywhere;
+      -webkit-text-size-adjust: 100%;
     }
-    h1 { font-size: 1.6rem; font-weight: 800; line-height: 1.5; margin: 0 0 28px; }
-    h2 { font-size: 1.25rem; font-weight: 800; line-height: 1.5; margin: 48px 0 16px; }
-    h3 { font-size: 1.05rem; font-weight: 700; margin: 28px 0 8px; }
-    p { margin: 0 0 20px; }
-    .lead { font-size: 1.1rem; font-weight: 700; }
-    a { color: #1f6feb; }
-    .tw { overflow-x: auto; margin: 0 0 20px; -webkit-overflow-scrolling: touch; }
-    table { border-collapse: collapse; width: 100%; font-size: 0.9rem; line-height: 1.5; font-variant-numeric: tabular-nums; }
-    th, td { border: 1px solid #d8d8d8; padding: 6px 8px; text-align: right; white-space: nowrap; }
-    thead th { background: #f3f5f8; text-align: center; }
-    tbody th { background: #f8f9fb; text-align: left; font-weight: 700; }
-    table.q th, table.q td { padding: 6px 6px; }
-    details { margin: 0 0 20px; }
-    summary { cursor: pointer; font-weight: 700; padding: 8px 0; }
-    .tool { border: 1px solid #d8d8d8; border-radius: 12px; padding: 16px; background: #f8f9fb; }
-    .tool label { display: block; font-weight: 700; margin: 0 0 4px; }
-    .tool .f { margin: 0 0 14px; }
-    .tool select, .tool input {
-      width: 100%; font: inherit; padding: 10px 12px; border: 1px solid #bbb; border-radius: 8px;
-      background: #fff; color: #2b2b2b;
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+    a { color: var(--ink); }
+
+    /* 上部の帯 */
+    .topbar { border-bottom: 1px solid var(--rule); }
+    .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
+    .logo { font-family: "Dela Gothic One", sans-serif; color: var(--red); text-decoration: none; font-size: 26px; line-height: 1; padding: 8px 0; }
+    .tagline { font-size: 12px; color: var(--sub); line-height: 1.5; text-align: right; }
+
+    /* 見出しまわり */
+    main.wrap { padding-top: 48px; }
+    .kicker { color: var(--red-text); font-size: 12px; font-weight: 700; letter-spacing: 0.22em; margin: 0 0 12px; }
+    h1 { font-size: clamp(24px, 5.6vw, 36px); font-weight: 900; line-height: 1.45; margin: 0 0 20px; }
+    .hero { display: flex; align-items: center; gap: 28px; margin: 0 0 20px; }
+    .hero h1 { flex: 1 1 auto; margin: 0; min-width: 0; }
+    .illus { flex: none; width: 180px; }
+    .illus svg { display: block; width: 100%; height: auto; }
+    .lead { font-size: 16px; margin: 0 0 32px; }
+    mark { background: linear-gradient(transparent 62%, rgba(232, 32, 42, 0.22) 62%); color: inherit; font-weight: 700; padding: 0 1px; }
+
+    /* 図の枠 */
+    .panel { background: var(--white); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; }
+    figure { margin: 0 0 32px; }
+    .figcap { font-size: 13px; color: var(--sub); line-height: 1.7; margin: 0 0 12px; }
+    .figcap b { color: var(--ink); }
+    .panel svg { display: block; width: 100%; height: auto; max-width: 520px; margin: 0 auto; }
+
+    /* 男女の代表値 */
+    .reps { border-top: 3px solid var(--ink); display: grid; grid-template-columns: 1fr 1fr; }
+    .rep { padding: 16px 0 4px; min-width: 0; }
+    .rep + .rep { border-left: 1px solid var(--rule); padding-left: 20px; }
+    .rep .lab { font-size: 14px; font-weight: 700; }
+    .rep .num { font-size: clamp(36px, 9.5vw, 52px); font-weight: 900; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .rep .num small { font-size: 16px; font-weight: 700; margin-left: 4px; }
+    .rep .cap { font-size: 12px; color: var(--sub); line-height: 1.6; }
+
+    /* 番号つきの章 */
+    .ch { margin: 64px 0 0; }
+    .no { display: block; color: var(--red-text); font-size: 14px; font-weight: 700; letter-spacing: 0.12em; font-variant-numeric: tabular-nums; line-height: 1.4; }
+    h2 { font-size: clamp(20px, 4.6vw, 26px); font-weight: 900; line-height: 1.5; margin: 4px 0 20px; padding: 0 0 12px; border-bottom: 1px solid var(--rule); }
+    h3 { font-size: 15px; font-weight: 700; margin: 28px 0 8px; }
+    p { margin: 0 0 16px; }
+    .note { font-size: 14px; }
+
+    /* 計算ツール */
+    .fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: var(--sub); line-height: 1.5; }
+    .field select, .field input {
+      width: 100%; min-height: 44px; font: inherit; font-size: 18px; font-weight: 700; color: var(--ink);
+      padding: 6px 2px; border: 0; border-bottom: 2px solid var(--ink); border-radius: 0; background-color: transparent;
+      -webkit-appearance: none; appearance: none;
     }
-    .tool button {
-      font: inherit; font-weight: 700; padding: 12px 24px; border: 0; border-radius: 10px;
-      background: #1f6feb; color: #fff; cursor: pointer; width: 100%;
+    .field select {
+      padding-right: 20px; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231A1A1A' stroke-width='2'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 4px center;
     }
-    #result { margin: 16px 0 0; min-height: 3.6em; }
-    #result .big { font-size: 1.6rem; font-weight: 800; line-height: 1.4; }
-    #result .sub { font-size: 0.85rem; color: #666; line-height: 1.7; }
-    .note { font-size: 0.9rem; }
-    .appnote { font-size: 0.8rem; line-height: 1.7; color: #666; margin: 12px 0 0; }
-    .btn-wrap { margin: 28px 0; text-align: center; }
-    .btn {
-      display: inline-block; padding: 14px 28px; background: #1f6feb; color: #fff;
-      text-decoration: none; border-radius: 10px; font-weight: 700;
+    .field input::placeholder { color: var(--sub); font-weight: 400; }
+    .field select:focus, .field input:focus { outline: none; border-bottom-width: 3px; padding-bottom: 5px; }
+    .go {
+      margin: 20px 0 0; min-height: 48px; padding: 10px 36px; font: inherit; font-size: 16px; font-weight: 700;
+      background: var(--ink); color: var(--white); border: 0; border-radius: var(--radius); cursor: pointer;
     }
-    footer { margin-top: 48px; font-size: 0.85rem; color: #888888; }
-    @media (prefers-color-scheme: dark) {
-      body { color: #e6e6e6; background: #16181c; }
-      a { color: #6ea8ff; }
-      th, td { border-color: #3a3d44; }
-      thead th { background: #23262c; }
-      tbody th { background: #1d2025; }
-      .tool { background: #1d2025; border-color: #3a3d44; }
-      .tool select, .tool input { background: #16181c; color: #e6e6e6; border-color: #555; }
-      #result .sub { color: #aaa; }
-      .appnote { color: #aaa; }
-      footer { color: #999999; }
+    .go:focus-visible { outline: 2px solid var(--red-text); outline-offset: 2px; }
+    .result { display: flex; align-items: center; gap: 8px 20px; flex-wrap: wrap; margin: 20px 0 0; padding: 16px 0 0; border-top: 1px solid var(--rule); min-height: 76px; }
+    .result .big { color: var(--red); font-weight: 900; font-size: 40px; line-height: 1.15; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .result .big .pre { color: var(--ink); font-size: 15px; font-weight: 700; margin-right: 6px; }
+    .result .big .post { color: var(--ink); font-size: 15px; font-weight: 700; margin-left: 4px; }
+    .result .sub { flex: 1 1 220px; font-size: 13px; color: var(--sub); line-height: 1.7; }
+    .result .msg { font-size: 14px; }
+    .appnote { font-size: 12px; line-height: 1.7; color: var(--sub); margin: 16px 0 0; }
+
+    /* 表（罫線だけ） */
+    .tw { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 16px; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+    th, td { padding: 8px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--rule); }
+    thead th { font-size: 12px; font-weight: 700; color: var(--sub); border-bottom: 2px solid var(--ink); }
+    thead th:first-child, tbody th { text-align: left; }
+    thead tr.grp th { color: var(--ink); text-align: center; border-bottom: 1px solid var(--rule); }
+    tbody th { font-weight: 700; }
+    td.max { color: var(--red-text); font-weight: 700; }
+    .scrollhint { display: none; font-size: 12px; color: var(--sub); margin: 0 0 4px; }
+    tr.total th, tr.total td { border-top: 2px solid var(--ink); }
+    details { margin: 0 0 16px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 12px 0; min-height: 44px; }
+    details[open] summary { border-bottom: 1px solid var(--rule); }
+
+    /* 末尾の案内 */
+    .app { margin: 72px 0 0; padding: 24px 0 0; border-top: 3px solid var(--ink); display: flex; gap: 16px; align-items: flex-start; }
+    .icon {
+      flex: none; width: 64px; height: 64px; border-radius: 14px; background: var(--red); color: var(--white);
+      font-family: "Dela Gothic One", sans-serif; font-size: 22px; line-height: 1; display: flex; align-items: center; justify-content: center;
+    }
+    .app h2 { font-size: 18px; border: 0; padding: 0; margin: 0 0 6px; }
+    .app p { font-size: 14px; margin: 0 0 8px; }
+    .app .cta { color: var(--red-text); font-weight: 700; text-decoration: none; display: inline-block; padding: 8px 0; }
+    .app .cta:hover { text-decoration: underline; }
+    footer { margin: 48px 0 0; padding: 20px 0 40px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--sub); }
+
+    @media (max-width: 480px) {
+      .wrap { padding: 0 16px; }
+      .panel { padding: 16px 12px; }
+      .fields { gap: 10px; }
+      .field select, .field input { font-size: 16px; }
+      .rep + .rep { padding-left: 14px; }
+      .result .big { font-size: 34px; }
+      th, td { padding: 8px 6px; }
+      table { font-size: 13px; }
+      .scrollhint { display: block; }
+      .hero { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .illus { width: 40%; }
     }
   </style>
 </head>
 <body>
-  <h1>握力の平均は？年代別・男女別の早見表と、上位何%かの目安</h1>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="logo" href="/">N%</a>
+      <span class="tagline">データで見る、日本の「ふつう」</span>
+    </div>
+  </header>
 
-  <p class="lead">20〜79歳の握力の平均は、男性で約35.7〜45.8kg、女性で約22.6〜28.1kgです。男性は30〜34歳（平均45.80kg）、女性は40〜44歳（平均28.06kg）がいちばん高く、その後は年齢とともにゆるやかに下がります。同じ年代・同じ性別の平均ちょうどなら、上位の目安は約50%です。</p>
+  <main class="wrap">
+    <p class="kicker">DATA ／ 体力</p>
+    <div class="hero">
+      <h1>握力の平均は？年代別・男女別に見る、あなたの位置</h1>
+      <div class="illus" aria-hidden="true">
+<svg viewBox="0 0 200 214" xmlns="http://www.w3.org/2000/svg">
+          <!-- 握力計の単純なアイコン：丸いメーターと持ち手。針だけ赤 -->
+          <circle cx="100" cy="72" r="56" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="5"/>
+          <g stroke="#1A1A1A" stroke-width="3" stroke-linecap="round">
+            <line x1="58" y1="72" x2="66" y2="72"/>
+            <line x1="70.3" y1="42.3" x2="76" y2="48"/>
+            <line x1="100" y1="30" x2="100" y2="38"/>
+            <line x1="129.7" y1="42.3" x2="124" y2="48"/>
+            <line x1="142" y1="72" x2="134" y2="72"/>
+          </g>
+          <line x1="100" y1="72" x2="128" y2="49" stroke="#E8202A" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="100" cy="72" r="7" fill="#1A1A1A"/>
+          <rect x="92" y="127" width="16" height="16" fill="#1A1A1A"/>
+          <rect x="58" y="141" width="84" height="64" rx="14" fill="none" stroke="#1A1A1A" stroke-width="9"/>
+          <rect x="74" y="168" width="52" height="13" rx="6.5" fill="#1A1A1A"/>
+        </svg>
+      </div>
+    </div>
+    <p class="lead">握力の平均がいちばん高いのは、男性が30〜34歳で<mark>45.80kg</mark>、女性が40〜44歳で<mark>28.06kg</mark>です。たとえば30〜34歳の男性で47kgなら、同じ区分の中で<mark>上位約44%</mark>です。</p>
 
-  <h2>握力の平均：年代別・男女別の早見表</h2>
-  <p>20〜79歳は5歳刻みの表です。単位はkg。標準偏差は、人によるばらつきの大きさを表す数字です（小さいほど、みんな平均の近くに集まっています）。</p>
-<div class="tw"><table><thead><tr><th scope="col" rowspan="2">年齢</th><th scope="colgroup" colspan="2">男性</th><th scope="colgroup" colspan="2">女性</th></tr><tr><th scope="col">平均(kg)</th><th scope="col">標準偏差</th><th scope="col">平均(kg)</th><th scope="col">標準偏差</th></tr></thead><tbody>
+    <figure>
+      <div class="panel">
+        <p class="figcap" id="fig1cap"><b>男性・30〜34歳で47kgの人の位置</b>。区分の平均45.80kg・標準偏差7.45から描いた分布です。点線は平均、赤い塗りは握力がそれより強い人の割合（44%）を表します。</p>
+        <svg id="fig1" viewBox="0 0 400 220" role="img" aria-label="男性・30〜34歳の分布の中で、47kgの位置"></svg>
+      </div>
+    </figure>
+
+    <div class="reps">
+      <div class="rep"><div class="lab">男性</div><div class="num">45.80<small>kg</small></div><div class="cap">30〜34歳の平均（いちばん高い区分）</div></div>
+      <div class="rep"><div class="lab">女性</div><div class="num">28.06<small>kg</small></div><div class="cap">40〜44歳の平均（いちばん高い区分）</div></div>
+    </div>
+
+    <section class="ch" id="calc-tool">
+      <span class="no">01</span>
+      <h2>あなたの握力は上位何%？ 計算ツール</h2>
+      <p>性別・年齢・握力を入れると、同じ性別・同じ年齢の区分の中で、上位何%くらいかの目安を出します。</p>
+      <form class="panel" id="calc" novalidate>
+        <div class="fields">
+          <div class="field"><label for="sex">性別</label>
+            <select id="sex"><option value="m" selected>男性</option><option value="f">女性</option></select></div>
+          <div class="field"><label for="age">年齢（歳）</label>
+            <input id="age" type="number" inputmode="numeric" min="0" max="120" step="1" placeholder="例：32" value="32"></div>
+          <div class="field"><label for="val">握力（kg）</label>
+            <input id="val" type="number" inputmode="decimal" min="0" max="120" step="0.1" placeholder="例：47" value="47"></div>
+        </div>
+        <button type="submit" class="go">計算する</button>
+        <div class="result" id="result" role="status" aria-live="polite"><div class="big"><span class="pre">上位</span>44%<span class="post">の目安</span></div><div class="sub">男性 30〜34歳の区分（平均45.80kg、標準偏差7.45）と比べた推定です。</div></div>
+        <p class="appnote">N%アプリは、握力を5kgごとの区分から選んで答え、区分のいちばん下の値（たとえば45〜49kgなら45kg）で計算します。このページは入力した値そのままで計算するため、同じ握力でも数字が違うことがあります。</p>
+      </form>
+      <noscript><p class="note">計算ツールにはJavaScriptが必要です。下の早見表をご覧ください。</p></noscript>
+    </section>
+
+    <section class="ch" id="trend">
+      <span class="no">02</span>
+      <h2>年代別の平均の推移</h2>
+      <figure>
+        <div class="panel">
+          <p class="figcap">20歳以上の、年代別の握力の平均（kg）。黒い線が男性、赤い線が女性。横軸は年齢の区分で、点は各区分の平均です。</p>
+          <svg viewBox="0 0 400 286" role="img" aria-label="握力の、20歳以上の年代別の平均。男性と女性の折れ線">
+            <line x1="40" x2="356" y1="216.0" y2="216.0" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="220.0" text-anchor="end" font-size="12" fill="#6B655E">20</text>
+            <line x1="40" x2="356" y1="182.7" y2="182.7" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="186.7" text-anchor="end" font-size="12" fill="#6B655E">25</text>
+            <line x1="40" x2="356" y1="149.3" y2="149.3" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="153.3" text-anchor="end" font-size="12" fill="#6B655E">30</text>
+            <line x1="40" x2="356" y1="116.0" y2="116.0" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="120.0" text-anchor="end" font-size="12" fill="#6B655E">35</text>
+            <line x1="40" x2="356" y1="82.7" y2="82.7" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="86.7" text-anchor="end" font-size="12" fill="#6B655E">40</text>
+            <line x1="40" x2="356" y1="49.3" y2="49.3" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="53.3" text-anchor="end" font-size="12" fill="#6B655E">45</text>
+            <line x1="40" x2="356" y1="16.0" y2="16.0" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="20.0" text-anchor="end" font-size="12" fill="#6B655E">50</text>
+            <text x="53.2" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 53.2 228)">20〜24歳</text>
+            <text x="79.5" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 79.5 228)">25〜29歳</text>
+            <text x="105.8" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 105.8 228)">30〜34歳</text>
+            <text x="132.2" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 132.2 228)">35〜39歳</text>
+            <text x="158.5" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 158.5 228)">40〜44歳</text>
+            <text x="184.8" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 184.8 228)">45〜49歳</text>
+            <text x="211.2" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 211.2 228)">50〜54歳</text>
+            <text x="237.5" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 237.5 228)">55〜59歳</text>
+            <text x="263.8" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 263.8 228)">60〜64歳</text>
+            <text x="290.2" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 290.2 228)">65〜69歳</text>
+            <text x="316.5" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 316.5 228)">70〜74歳</text>
+            <text x="342.8" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 342.8 228)">75〜79歳</text>
+            <polyline points="53.2,55.7 79.5,48.9 105.8,44.0 132.2,44.5 158.5,44.8 184.8,48.7 211.2,57.8 237.5,60.9 263.8,73.5 290.2,85.6 316.5,97.6 342.8,111.5" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="53.2" cy="55.7" r="3.5" fill="#1A1A1A"><title>男性 20〜24歳：44.04kg</title></circle>
+            <circle cx="79.5" cy="48.9" r="3.5" fill="#1A1A1A"><title>男性 25〜29歳：45.06kg</title></circle>
+            <circle cx="105.8" cy="44.0" r="3.5" fill="#1A1A1A"><title>男性 30〜34歳：45.80kg</title></circle>
+            <circle cx="132.2" cy="44.5" r="3.5" fill="#1A1A1A"><title>男性 35〜39歳：45.73kg</title></circle>
+            <circle cx="158.5" cy="44.8" r="3.5" fill="#1A1A1A"><title>男性 40〜44歳：45.68kg</title></circle>
+            <circle cx="184.8" cy="48.7" r="3.5" fill="#1A1A1A"><title>男性 45〜49歳：45.09kg</title></circle>
+            <circle cx="211.2" cy="57.8" r="3.5" fill="#1A1A1A"><title>男性 50〜54歳：43.73kg</title></circle>
+            <circle cx="237.5" cy="60.9" r="3.5" fill="#1A1A1A"><title>男性 55〜59歳：43.27kg</title></circle>
+            <circle cx="263.8" cy="73.5" r="3.5" fill="#1A1A1A"><title>男性 60〜64歳：41.37kg</title></circle>
+            <circle cx="290.2" cy="85.6" r="3.5" fill="#1A1A1A"><title>男性 65〜69歳：39.56kg</title></circle>
+            <circle cx="316.5" cy="97.6" r="3.5" fill="#1A1A1A"><title>男性 70〜74歳：37.76kg</title></circle>
+            <circle cx="342.8" cy="111.5" r="3.5" fill="#1A1A1A"><title>男性 75〜79歳：35.68kg</title></circle>
+            <text x="350.8" y="115.5" font-size="12" font-weight="700" fill="#1A1A1A">男性</text>
+            <polyline points="53.2,168.5 79.5,167.3 105.8,165.7 132.2,164.1 158.5,162.3 184.8,165.0 211.2,170.9 237.5,171.5 263.8,177.7 290.2,182.6 316.5,190.2 342.8,198.6" fill="none" stroke="#E8202A" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="53.2" cy="168.5" r="3.5" fill="#E8202A"><title>女性 20〜24歳：27.12kg</title></circle>
+            <circle cx="79.5" cy="167.3" r="3.5" fill="#E8202A"><title>女性 25〜29歳：27.31kg</title></circle>
+            <circle cx="105.8" cy="165.7" r="3.5" fill="#E8202A"><title>女性 30〜34歳：27.55kg</title></circle>
+            <circle cx="132.2" cy="164.1" r="3.5" fill="#E8202A"><title>女性 35〜39歳：27.79kg</title></circle>
+            <circle cx="158.5" cy="162.3" r="3.5" fill="#E8202A"><title>女性 40〜44歳：28.06kg</title></circle>
+            <circle cx="184.8" cy="165.0" r="3.5" fill="#E8202A"><title>女性 45〜49歳：27.65kg</title></circle>
+            <circle cx="211.2" cy="170.9" r="3.5" fill="#E8202A"><title>女性 50〜54歳：26.76kg</title></circle>
+            <circle cx="237.5" cy="171.5" r="3.5" fill="#E8202A"><title>女性 55〜59歳：26.68kg</title></circle>
+            <circle cx="263.8" cy="177.7" r="3.5" fill="#E8202A"><title>女性 60〜64歳：25.75kg</title></circle>
+            <circle cx="290.2" cy="182.6" r="3.5" fill="#E8202A"><title>女性 65〜69歳：25.01kg</title></circle>
+            <circle cx="316.5" cy="190.2" r="3.5" fill="#E8202A"><title>女性 70〜74歳：23.87kg</title></circle>
+            <circle cx="342.8" cy="198.6" r="3.5" fill="#E8202A"><title>女性 75〜79歳：22.61kg</title></circle>
+            <text x="350.8" y="202.6" font-size="12" font-weight="700" fill="#1A1A1A">女性</text>
+          </svg>
+        </div>
+      </figure>
+    </section>
+
+    <section class="ch" id="table">
+      <span class="no">03</span>
+      <h2>握力の平均：年代別・男女別の早見表</h2>
+      <p>20〜79歳の握力の平均は、男性で約35.7〜45.8kg、女性で約22.6〜28.1kgで、いちばん高い区分の後は、年齢とともにゆるやかに下がります。20〜79歳は5歳刻みの表です。単位はkg。標準偏差は、人によるばらつきの大きさを表す数字です（小さいほど、みんな平均の近くに集まっています）。赤字は、表ごとに男女それぞれで平均がいちばん高い区分です。</p>
+<div class="tw"><table><thead>
+<tr class="grp"><th scope="col" rowspan="2">年齢</th><th scope="colgroup" colspan="2">男性</th><th scope="colgroup" colspan="2">女性</th></tr>
+<tr><th scope="col">平均(kg)</th><th scope="col">標準偏差</th><th scope="col">平均(kg)</th><th scope="col">標準偏差</th></tr>
+</thead><tbody>
 <tr><th scope="row">20〜24歳</th><td>44.04</td><td>7.55</td><td>27.12</td><td>4.77</td></tr>
 <tr><th scope="row">25〜29歳</th><td>45.06</td><td>7.42</td><td>27.31</td><td>4.77</td></tr>
-<tr><th scope="row">30〜34歳</th><td>45.80</td><td>7.45</td><td>27.55</td><td>4.74</td></tr>
+<tr><th scope="row">30〜34歳</th><td class="max">45.80</td><td>7.45</td><td>27.55</td><td>4.74</td></tr>
 <tr><th scope="row">35〜39歳</th><td>45.73</td><td>7.49</td><td>27.79</td><td>4.68</td></tr>
-<tr><th scope="row">40〜44歳</th><td>45.68</td><td>7.28</td><td>28.06</td><td>4.71</td></tr>
+<tr><th scope="row">40〜44歳</th><td>45.68</td><td>7.28</td><td class="max">28.06</td><td>4.71</td></tr>
 <tr><th scope="row">45〜49歳</th><td>45.09</td><td>7.06</td><td>27.65</td><td>4.66</td></tr>
 <tr><th scope="row">50〜54歳</th><td>43.73</td><td>6.67</td><td>26.76</td><td>4.71</td></tr>
 <tr><th scope="row">55〜59歳</th><td>43.27</td><td>6.60</td><td>26.68</td><td>4.37</td></tr>
@@ -97,9 +309,12 @@
 <tr><th scope="row">70〜74歳</th><td>37.76</td><td>6.29</td><td>23.87</td><td>4.01</td></tr>
 <tr><th scope="row">75〜79歳</th><td>35.68</td><td>6.00</td><td>22.61</td><td>4.09</td></tr>
 </tbody></table></div>
-  <details>
-    <summary>6〜19歳（1歳ごと）の表を見る</summary>
-<div class="tw"><table><thead><tr><th scope="col" rowspan="2">年齢</th><th scope="colgroup" colspan="2">男性</th><th scope="colgroup" colspan="2">女性</th></tr><tr><th scope="col">平均(kg)</th><th scope="col">標準偏差</th><th scope="col">平均(kg)</th><th scope="col">標準偏差</th></tr></thead><tbody>
+      <details>
+        <summary>6〜19歳（1歳ごと）の表を見る</summary>
+<div class="tw"><table><thead>
+<tr class="grp"><th scope="col" rowspan="2">年齢</th><th scope="colgroup" colspan="2">男性</th><th scope="colgroup" colspan="2">女性</th></tr>
+<tr><th scope="col">平均(kg)</th><th scope="col">標準偏差</th><th scope="col">平均(kg)</th><th scope="col">標準偏差</th></tr>
+</thead><tbody>
 <tr><th scope="row">6歳</th><td>9.11</td><td>2.26</td><td>8.37</td><td>2.01</td></tr>
 <tr><th scope="row">7歳</th><td>10.52</td><td>2.52</td><td>9.98</td><td>2.32</td></tr>
 <tr><th scope="row">8歳</th><td>12.67</td><td>2.99</td><td>11.71</td><td>2.57</td></tr>
@@ -111,86 +326,87 @@
 <tr><th scope="row">14歳</th><td>35.26</td><td>7.49</td><td>25.21</td><td>4.61</td></tr>
 <tr><th scope="row">15歳</th><td>37.01</td><td>7.51</td><td>25.23</td><td>4.67</td></tr>
 <tr><th scope="row">16歳</th><td>38.92</td><td>7.50</td><td>25.95</td><td>4.86</td></tr>
-<tr><th scope="row">17歳</th><td>40.74</td><td>7.84</td><td>26.39</td><td>5.12</td></tr>
+<tr><th scope="row">17歳</th><td class="max">40.74</td><td>7.84</td><td class="max">26.39</td><td>5.12</td></tr>
 <tr><th scope="row">18歳</th><td>40.01</td><td>6.87</td><td>25.55</td><td>4.62</td></tr>
 <tr><th scope="row">19歳</th><td>40.28</td><td>6.64</td><td>25.69</td><td>4.35</td></tr>
 </tbody></table></div>
-  </details>
+      </details>
+    </section>
 
-  <h2>あなたの握力は上位何%？ 計算ツール</h2>
-  <p>性別・年齢・握力を入れると、同じ性別・同じ年齢の区分の中で、上位何%くらいかの目安を出します。</p>
-  <form class="tool" id="calc" onsubmit="return false;">
-    <div class="f"><label for="sex">性別</label>
-      <select id="sex"><option value="m">男性</option><option value="f">女性</option></select></div>
-    <div class="f"><label for="age">年齢（歳）</label>
-      <input id="age" type="number" inputmode="numeric" min="0" max="120" step="1" placeholder="例：32"></div>
-    <div class="f"><label for="kg">握力（kg）</label>
-      <input id="kg" type="number" inputmode="decimal" min="0" max="120" step="0.1" placeholder="例：47"></div>
-    <button type="submit" id="go">上位何%か調べる</button>
-    <div id="result" role="status" aria-live="polite"></div>
-    <p class="appnote">N%アプリは、握力を5kgごとの区分から選んで答える仕組みのため、区分の途中の握力だと、このページより最大10ポイントほど高め（上位が甘め）に出ます。このページは、入力した握力の値そのままで計算した目安です。</p>
-  </form>
-  <noscript><p class="note">計算ツールにはJavaScriptが必要です。下の早見表をご覧ください。</p></noscript>
-
-  <h2>握力別・上位何%の早見表</h2>
-  <p>各年代の後半5歳の区分（20代は25〜29歳、30代は35〜39歳……70代は75〜79歳）の平均と標準偏差から計算した、上位の割合の目安です。握力はkgです。数字が大きいほど、同じ年代・性別の中での順位は下のほうです（上位99%は、下から1%あたり）。</p>
-<h3>男性</h3>
-<div class="tw"><table class="q"><thead><tr><th scope="col">握力</th><th scope="col">20代</th><th scope="col">30代</th><th scope="col">40代</th><th scope="col">50代</th><th scope="col">60代</th><th scope="col">70代</th></tr></thead><tbody>
-<tr><th scope="row">20kg</th><td>ほぼ100%</td><td>ほぼ100%</td><td>ほぼ100%</td><td>ほぼ100%</td><td>ほぼ100%</td><td>ほぼ100%</td></tr>
-<tr><th scope="row">25kg</th><td>ほぼ100%</td><td>ほぼ100%</td><td>ほぼ100%</td><td>ほぼ100%</td><td>99%</td><td>96%</td></tr>
-<tr><th scope="row">30kg</th><td>98%</td><td>98%</td><td>98%</td><td>98%</td><td>94%</td><td>83%</td></tr>
-<tr><th scope="row">35kg</th><td>91%</td><td>92%</td><td>92%</td><td>89%</td><td>77%</td><td>55%</td></tr>
-<tr><th scope="row">40kg</th><td>75%</td><td>78%</td><td>76%</td><td>69%</td><td>47%</td><td>24%</td></tr>
-<tr><th scope="row">45kg</th><td>50%</td><td>54%</td><td>51%</td><td>40%</td><td>19%</td><td>6.0%</td></tr>
-<tr><th scope="row">50kg</th><td>25%</td><td>28%</td><td>24%</td><td>15%</td><td>4.9%</td><td>0.9%</td></tr>
-<tr><th scope="row">55kg</th><td>9.0%</td><td>11%</td><td>8.0%</td><td>3.8%</td><td>0.7%</td><td>0.1%未満</td></tr>
+    <section class="ch" id="quick">
+      <span class="no">04</span>
+      <h2>握力別・上位何%の早見表</h2>
+      <p>各年代の後半5歳の区分（20代は25〜29歳、30代は35〜39歳……70代は75〜79歳）の平均と標準偏差から計算した、上位の割合の目安です。握力はkgです。数字が大きいほど、同じ年代・性別の中での順位は下のほうです（上位99%は、下から1%あたり）。</p>
+      <h3>男性（上位何%）</h3>
+      <p class="scrollhint">表は横にスクロールできます →</p>
+<div class="tw"><table><thead><tr><th scope="col">握力</th><th scope="col">20代</th><th scope="col">30代</th><th scope="col">40代</th><th scope="col">50代</th><th scope="col">60代</th><th scope="col">70代</th></tr></thead><tbody>
+<tr><th scope="row">20kg</th><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td></tr>
+<tr><th scope="row">25kg</th><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.1781)">99%</td><td style="background:rgba(232,32,42,0.1732)">96%</td></tr>
+<tr><th scope="row">30kg</th><td style="background:rgba(232,32,42,0.1762)">98%</td><td style="background:rgba(232,32,42,0.1768)">98%</td><td style="background:rgba(232,32,42,0.1771)">98%</td><td style="background:rgba(232,32,42,0.176)">98%</td><td style="background:rgba(232,32,42,0.1683)">94%</td><td style="background:rgba(232,32,42,0.1491)">83%</td></tr>
+<tr><th scope="row">35kg</th><td style="background:rgba(232,32,42,0.1642)">91%</td><td style="background:rgba(232,32,42,0.1663)">92%</td><td style="background:rgba(232,32,42,0.1662)">92%</td><td style="background:rgba(232,32,42,0.1611)">89%</td><td style="background:rgba(232,32,42,0.1377)">77%</td><td style="background:rgba(232,32,42,0.0981)">55%</td></tr>
+<tr><th scope="row">40kg</th><td style="background:rgba(232,32,42,0.1354)">75%</td><td style="background:rgba(232,32,42,0.14)">78%</td><td style="background:rgba(232,32,42,0.1376)">76%</td><td style="background:rgba(232,32,42,0.1242)">69%</td><td style="background:rgba(232,32,42,0.085)">47%</td><td style="background:rgba(232,32,42,0.0424)">24%</td></tr>
+<tr><th scope="row">45kg</th><td style="background:rgba(232,32,42,0.0906)">50%</td><td style="background:rgba(232,32,42,0.097)">54%</td><td style="background:rgba(232,32,42,0.0909)">51%</td><td style="background:rgba(232,32,42,0.0714)">40%</td><td style="background:rgba(232,32,42,0.035)">19%</td><td style="background:rgba(232,32,42,0.0108)">6.0%</td></tr>
+<tr><th scope="row">50kg</th><td style="background:rgba(232,32,42,0.0455)">25%</td><td style="background:rgba(232,32,42,0.0512)">28%</td><td style="background:rgba(232,32,42,0.0438)">24%</td><td style="background:rgba(232,32,42,0.0277)">15%</td><td style="background:rgba(232,32,42,0.0088)">4.9%</td><td style="background:rgba(232,32,42,0.0015)">0.9%</td></tr>
+<tr><th scope="row">55kg</th><td style="background:rgba(232,32,42,0.0162)">9.0%</td><td style="background:rgba(232,32,42,0.0194)">11%</td><td style="background:rgba(232,32,42,0.0144)">8.0%</td><td style="background:rgba(232,32,42,0.0068)">3.8%</td><td style="background:rgba(232,32,42,0.0013)">0.7%</td><td>0.1%未満</td></tr>
 </tbody></table></div>
-<h3>女性</h3>
-<div class="tw"><table class="q"><thead><tr><th scope="col">握力</th><th scope="col">20代</th><th scope="col">30代</th><th scope="col">40代</th><th scope="col">50代</th><th scope="col">60代</th><th scope="col">70代</th></tr></thead><tbody>
-<tr><th scope="row">20kg</th><td>94%</td><td>95%</td><td>95%</td><td>94%</td><td>90%</td><td>74%</td></tr>
-<tr><th scope="row">25kg</th><td>69%</td><td>72%</td><td>72%</td><td>65%</td><td>50%</td><td>28%</td></tr>
-<tr><th scope="row">30kg</th><td>29%</td><td>32%</td><td>31%</td><td>22%</td><td>10%</td><td>3.5%</td></tr>
-<tr><th scope="row">35kg</th><td>5.3%</td><td>6.2%</td><td>5.7%</td><td>2.8%</td><td>0.6%</td><td>0.1%</td></tr>
-<tr><th scope="row">40kg</th><td>0.4%</td><td>0.5%</td><td>0.4%</td><td>0.1%</td><td>0.1%未満</td><td>0.1%未満</td></tr>
-<tr><th scope="row">45kg</th><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td></tr>
-<tr><th scope="row">50kg</th><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td></tr>
-<tr><th scope="row">55kg</th><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td></tr>
+      <h3>女性（上位何%）</h3>
+      <p class="scrollhint">表は横にスクロールできます →</p>
+<div class="tw"><table><thead><tr><th scope="col">握力</th><th scope="col">20代</th><th scope="col">30代</th><th scope="col">40代</th><th scope="col">50代</th><th scope="col">60代</th><th scope="col">70代</th></tr></thead><tbody>
+<tr><th scope="row">15kg</th><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.179)">99%</td><td style="background:rgba(232,32,42,0.1743)">97%</td></tr>
+<tr><th scope="row">20kg</th><td style="background:rgba(232,32,42,0.1687)">94%</td><td style="background:rgba(232,32,42,0.1714)">95%</td><td style="background:rgba(232,32,42,0.1709)">95%</td><td style="background:rgba(232,32,42,0.1686)">94%</td><td style="background:rgba(232,32,42,0.1616)">90%</td><td style="background:rgba(232,32,42,0.1329)">74%</td></tr>
+<tr><th scope="row">25kg</th><td style="background:rgba(232,32,42,0.1235)">69%</td><td style="background:rgba(232,32,42,0.1304)">72%</td><td style="background:rgba(232,32,42,0.1287)">72%</td><td style="background:rgba(232,32,42,0.1169)">65%</td><td style="background:rgba(232,32,42,0.0902)">50%</td><td style="background:rgba(232,32,42,0.0503)">28%</td></tr>
+<tr><th scope="row">30kg</th><td style="background:rgba(232,32,42,0.0516)">29%</td><td style="background:rgba(232,32,42,0.0573)">32%</td><td style="background:rgba(232,32,42,0.0553)">31%</td><td style="background:rgba(232,32,42,0.0403)">22%</td><td style="background:rgba(232,32,42,0.0186)">10%</td><td style="background:rgba(232,32,42,0.0064)">3.5%</td></tr>
+<tr><th scope="row">35kg</th><td style="background:rgba(232,32,42,0.0096)">5.3%</td><td style="background:rgba(232,32,42,0.0111)">6.2%</td><td style="background:rgba(232,32,42,0.0103)">5.7%</td><td style="background:rgba(232,32,42,0.0051)">2.8%</td><td style="background:rgba(232,32,42,0.001)">0.6%</td><td style="background:rgba(232,32,42,0.0002)">0.1%</td></tr>
+<tr><th scope="row">40kg</th><td style="background:rgba(232,32,42,0.0007)">0.4%</td><td style="background:rgba(232,32,42,0.0008)">0.5%</td><td style="background:rgba(232,32,42,0.0007)">0.4%</td><td style="background:rgba(232,32,42,0.0002)">0.1%</td><td>0.1%未満</td><td>0.1%未満</td></tr>
 </tbody></table></div>
+    </section>
 
-  <h2>この割合についての注意</h2>
-  <p class="note">このページの割合は、平均値と標準偏差から正規分布を仮定して計算した推定です。実際の分布とずれる場合があります。測定条件や個人差もあります。</p>
+    <section class="ch" id="caution">
+      <h2>この割合についての注意</h2>
+      <p class="note">このページの割合は、平均値と標準偏差から正規分布を仮定して計算した推定です。実際の分布とずれる場合があります。測定条件や個人差もあります。</p>
+    </section>
 
-  <h2>出典</h2>
-  <p class="note">
-    調査名：令和7年度体力・運動能力調査<br>
-    提供元：スポーツ庁<br>
-    調査年：2025年（令和7年度）<br>
-    表：表1-1 年齢別テストの結果（握力、上体起こし、長座体前屈）<br>
-    URL：<a href="https://www.e-stat.go.jp/stat-search/files?toukei=00402102&statInfId=000040514896" target="_blank" rel="noopener">https://www.e-stat.go.jp/stat-search/files?toukei=00402102&statInfId=000040514896</a><br>
-    出典：スポーツ庁『令和7年度体力・運動能力調査』（政府標準利用規約2.0）を加工して作成
-  </p>
+    <section class="ch" id="source">
+      <h2>出典</h2>
+      <p class="note">
+        調査名：令和7年度体力・運動能力調査<br>
+        提供元：スポーツ庁<br>
+        調査年：2025年（令和7年度）<br>
+        表：表1-1 年齢別テストの結果（握力、上体起こし、長座体前屈）<br>
+        URL：<a href="https://www.e-stat.go.jp/stat-search/files?toukei=00402102&amp;statInfId=000040514896" target="_blank" rel="noopener">https://www.e-stat.go.jp/stat-search/files?toukei=00402102&amp;statInfId=000040514896</a><br>
+        出典：スポーツ庁『令和7年度体力・運動能力調査』を加工して作成<br>
+        ライセンス：政府標準利用規約2.0（CC BY 4.0互換）
+      </p>
+    </section>
 
-  <h2>握力のほかも調べられるアプリを作っています</h2>
-  <p>
-    握力以外にも、年収・身長・趣味など約110項目で、全国の統計をもとに「自分は全体の何%くらいなんだろう」を調べられるアプリ『N%』を、個人で作っています。気になったら、のぞいてみてください。
-  </p>
-  <div class="btn-wrap">
-    <a class="btn" href="https://apps.apple.com/jp/app/id6834828485">App Storeで『N%』を見る</a>
-  </div>
+    <aside class="app">
+      <div class="icon" aria-hidden="true">N%</div>
+      <div>
+        <h2>ほかの項目でも、自分の位置を</h2>
+        <p>年収・身長・趣味など約110項目を、全国の統計で見られるアプリ『N%』を、個人で作っています。</p>
+        <a class="cta" href="https://apps.apple.com/jp/app/id6834828485">App Storeで見る →</a>
+      </div>
+    </aside>
+  </main>
 
-  <footer>運営：FLANGT ／ © 2026 FLANGT</footer>
+  <footer>
+    <div class="wrap">運営：FLANGT ／ © 2026 FLANGT</div>
+  </footer>
 
   <script>
   (function () {
-    // 区分ごとの [平均, 標準偏差]。キーは「性別|年齢の区分」。出典の表から書き写したもの
-    var N = {"m|6-6":[9.11,2.26],"f|6-6":[8.37,2.01],"m|7-7":[10.52,2.52],"f|7-7":[9.98,2.32],"m|8-8":[12.67,2.99],"f|8-8":[11.71,2.57],"m|9-9":[14.21,3.18],"f|9-9":[13.5,3.27],"m|10-10":[16.66,3.7],"f|10-10":[15.94,3.84],"m|11-11":[19.22,4.65],"f|11-11":[19.12,4.3],"m|12-12":[24.4,6.47],"f|12-12":[21.79,4.63],"m|13-13":[30.52,7.2],"f|13-13":[23.91,4.73],"m|14-14":[35.26,7.49],"f|14-14":[25.21,4.61],"m|15-15":[37.01,7.51],"f|15-15":[25.23,4.67],"m|16-16":[38.92,7.5],"f|16-16":[25.95,4.86],"m|17-17":[40.74,7.84],"f|17-17":[26.39,5.12],"m|18-18":[40.01,6.87],"f|18-18":[25.55,4.62],"m|19-19":[40.28,6.64],"f|19-19":[25.69,4.35],"m|20-24":[44.04,7.55],"f|20-24":[27.12,4.77],"m|25-29":[45.06,7.42],"f|25-29":[27.31,4.77],"m|30-34":[45.8,7.45],"f|30-34":[27.55,4.74],"m|35-39":[45.73,7.49],"f|35-39":[27.79,4.68],"m|40-44":[45.68,7.28],"f|40-44":[28.06,4.71],"m|45-49":[45.09,7.06],"f|45-49":[27.65,4.66],"m|50-54":[43.73,6.67],"f|50-54":[26.76,4.71],"m|55-59":[43.27,6.6],"f|55-59":[26.68,4.37],"m|60-64":[41.37,6.31],"f|60-64":[25.75,4.26],"m|65-69":[39.56,6.31],"f|65-69":[25.01,3.95],"m|70-74":[37.76,6.29],"f|70-74":[23.87,4.01],"m|75-79":[35.68,6.0],"f|75-79":[22.61,4.09]};
+    // 生成スクリプト（n_percent/tools/seo_pages/build.py）が項目ファイルから書き出した設定と数字
+    var C = {"short":"握力","unit":"kg","dec":2,"prefix":"上位","suffix":"の目安","sideWord":"握力がそれより強い","lowMsg":"6歳未満は、元の調査にデータがないため計算できません。","cells":[{"key":"6-6","lo":6,"hi":6},{"key":"7-7","lo":7,"hi":7},{"key":"8-8","lo":8,"hi":8},{"key":"9-9","lo":9,"hi":9},{"key":"10-10","lo":10,"hi":10},{"key":"11-11","lo":11,"hi":11},{"key":"12-12","lo":12,"hi":12},{"key":"13-13","lo":13,"hi":13},{"key":"14-14","lo":14,"hi":14},{"key":"15-15","lo":15,"hi":15},{"key":"16-16","lo":16,"hi":16},{"key":"17-17","lo":17,"hi":17},{"key":"18-18","lo":18,"hi":18},{"key":"19-19","lo":19,"hi":19},{"key":"20-24","lo":20,"hi":24},{"key":"25-29","lo":25,"hi":29},{"key":"30-34","lo":30,"hi":34},{"key":"35-39","lo":35,"hi":39},{"key":"40-44","lo":40,"hi":44},{"key":"45-49","lo":45,"hi":49},{"key":"50-54","lo":50,"hi":54},{"key":"55-59","lo":55,"hi":59},{"key":"60-64","lo":60,"hi":64},{"key":"65-69","lo":65,"hi":69},{"key":"70-74","lo":70,"hi":74},{"key":"75-79","lo":75,"hi":79}],"N":{"m|6-6":[9.11,2.26],"f|6-6":[8.37,2.01],"m|7-7":[10.52,2.52],"f|7-7":[9.98,2.32],"m|8-8":[12.67,2.99],"f|8-8":[11.71,2.57],"m|9-9":[14.21,3.18],"f|9-9":[13.5,3.27],"m|10-10":[16.66,3.7],"f|10-10":[15.94,3.84],"m|11-11":[19.22,4.65],"f|11-11":[19.12,4.3],"m|12-12":[24.4,6.47],"f|12-12":[21.79,4.63],"m|13-13":[30.52,7.2],"f|13-13":[23.91,4.73],"m|14-14":[35.26,7.49],"f|14-14":[25.21,4.61],"m|15-15":[37.01,7.51],"f|15-15":[25.23,4.67],"m|16-16":[38.92,7.5],"f|16-16":[25.95,4.86],"m|17-17":[40.74,7.84],"f|17-17":[26.39,5.12],"m|18-18":[40.01,6.87],"f|18-18":[25.55,4.62],"m|19-19":[40.28,6.64],"f|19-19":[25.69,4.35],"m|20-24":[44.04,7.55],"f|20-24":[27.12,4.77],"m|25-29":[45.06,7.42],"f|25-29":[27.31,4.77],"m|30-34":[45.8,7.45],"f|30-34":[27.55,4.74],"m|35-39":[45.73,7.49],"f|35-39":[27.79,4.68],"m|40-44":[45.68,7.28],"f|40-44":[28.06,4.71],"m|45-49":[45.09,7.06],"f|45-49":[27.65,4.66],"m|50-54":[43.73,6.67],"f|50-54":[26.76,4.71],"m|55-59":[43.27,6.6],"f|55-59":[26.68,4.37],"m|60-64":[41.37,6.31],"f|60-64":[25.75,4.26],"m|65-69":[39.56,6.31],"f|65-69":[25.01,3.95],"m|70-74":[37.76,6.29],"f|70-74":[23.87,4.01],"m|75-79":[35.68,6.0],"f|75-79":[22.61,4.09]},"example":{"sex":"m","age":32,"value":47}};
+    var SVGNS = "http://www.w3.org/2000/svg";
+
+    // 上側確率 1-Φ(z)。誤差関数の近似（Abramowitz & Stegun 7.1.26）
     function upper(z) {
-      // 上側確率 1-Φ(z)。誤差関数の近似（Abramowitz & Stegun 7.1.26）
       var x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.3275911 * x);
       var poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))));
       var erf = 1 - poly * Math.exp(-x * x);
       return z >= 0 ? 0.5 * (1 - erf) : 0.5 * (1 + erf);
     }
+    // 割合の表記。99.5%以上は「ほぼ100%」、0.1%未満は「0.1%未満」
     function fmt(p) {
       if (p < 0.1) return "0.1%未満";
       if (p >= 99.5) return "ほぼ100%";
@@ -198,38 +414,115 @@
       if (r1 < 10) return r1.toFixed(1) + "%";
       return Math.round(p) + "%";
     }
-    function cell(age) {
-      if (age >= 6 && age <= 19) return [age, age];
-      if (age >= 20 && age <= 79) { var lo = Math.floor(age / 5) * 5; return [lo, lo + 4]; }
+    // 年齢を、データにある区分に当てはめる（hi が null の区分は「〜歳以上」）
+    function cellOf(age) {
+      for (var i = 0; i < C.cells.length; i++) {
+        var c = C.cells[i];
+        if (age >= c.lo && (c.hi === null || age <= c.hi)) return c;
+      }
       return null;
     }
-    window.gripCalc = function (sex, age, kg) {
-      var c = cell(age);
+    function cellLabel(c) {
+      if (c.hi === null) return c.lo + "歳以上";
+      return c.lo === c.hi ? c.lo + "歳" : c.lo + "〜" + c.hi + "歳";
+    }
+    function num(v) { return String(Math.round(v * 100) / 100); }
+    window.npCalc = function (sex, age, v) {
+      var c = cellOf(Math.floor(age));
       if (!c) return null;
-      var ms = N[sex + "|" + c[0] + "-" + c[1]];
-      return { cell: c, mean: ms[0], sd: ms[1], p: upper((kg - ms[0]) / ms[1]) * 100 };
+      var ms = C.N[sex + "|" + c.key];
+      return { key: c.key, label: cellLabel(c), mean: ms[0], sd: ms[1], p: upper((v - ms[0]) / ms[1]) * 100, text: fmt(upper((v - ms[0]) / ms[1]) * 100) };
     };
+
+    // 図1：区分の分布（正規分布）と、その人の位置
+    function el(name, attrs, text) {
+      var e = document.createElementNS(SVGNS, name);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      if (text != null) e.textContent = text;
+      return e;
+    }
+    function niceStep(range, maxTicks) {
+      var steps = [1, 2, 5, 10, 20, 50, 100];
+      for (var i = 0; i < steps.length; i++) if (range / steps[i] <= maxTicks) return steps[i];
+      return 100;
+    }
+    function draw(sex, r, v) {
+      var svg = document.getElementById("fig1");
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      var W = 400, H = 220, L = 14, R = 14, T = 52, B = 36, base = H - B;
+      var lo = r.mean - 4 * r.sd, hi = r.mean + 4 * r.sd;
+      // 値が範囲の外なら、6標準偏差までは範囲を広げ、それより外は端に寄せて描く
+      if (v < lo) lo = Math.max(v - 0.5 * r.sd, r.mean - 6 * r.sd);
+      if (v > hi) hi = Math.min(v + 0.5 * r.sd, r.mean + 6 * r.sd);
+      function X(x) { return L + (x - lo) / (hi - lo) * (W - L - R); }
+      function pdf(x) { var z = (x - r.mean) / r.sd; return Math.exp(-0.5 * z * z); }
+      function Y(d) { return base - d * (base - T - 4); }
+      var vc = Math.min(Math.max(v, lo), hi);
+      var pts = [], fill = [], n = 160;
+      for (var i = 0; i <= n; i++) {
+        var x = lo + (hi - lo) * i / n;
+        pts.push(X(x).toFixed(1) + "," + Y(pdf(x)).toFixed(1));
+        if (x >= vc) fill.push(X(x).toFixed(1) + "," + Y(pdf(x)).toFixed(1));
+      }
+      fill.unshift(X(vc).toFixed(1) + "," + Y(pdf(vc)).toFixed(1));
+      fill.unshift(X(vc).toFixed(1) + "," + base);
+      fill.push(X(hi).toFixed(1) + "," + base);
+      svg.appendChild(el("polygon", { points: fill.join(" "), fill: "rgba(232,32,42,0.16)" }));
+      svg.appendChild(el("polyline", { points: pts.join(" "), fill: "none", stroke: "#1A1A1A", "stroke-width": 2, "stroke-linejoin": "round" }));
+      // 平均の点線
+      svg.appendChild(el("line", { x1: X(r.mean), x2: X(r.mean), y1: base, y2: Y(1), stroke: "#6B655E", "stroke-width": 1, "stroke-dasharray": "3 3" }));
+      // 横軸と目盛り
+      svg.appendChild(el("line", { x1: L, x2: W - R, y1: base, y2: base, stroke: "#DDD6CA", "stroke-width": 1 }));
+      var step = niceStep(hi - lo, 7);
+      for (var t = Math.ceil(lo / step) * step; t <= hi; t += step) {
+        svg.appendChild(el("line", { x1: X(t), x2: X(t), y1: base, y2: base + 4, stroke: "#6B655E", "stroke-width": 1 }));
+        svg.appendChild(el("text", { x: X(t), y: base + 20, "text-anchor": "middle", "font-size": 13, fill: "#6B655E" }, String(t)));
+      }
+      // その人の位置：赤い縦線・点・ラベル
+      var px = X(vc), py = Y(pdf(vc));
+      svg.appendChild(el("line", { x1: px, x2: px, y1: base, y2: T - 12, stroke: "#E8202A", "stroke-width": 2 }));
+      svg.appendChild(el("circle", { cx: px, cy: py, r: 5, fill: "#E8202A", stroke: "#FFFFFF", "stroke-width": 2 }));
+      var anchor = px < 70 ? "start" : (px > W - 70 ? "end" : "middle");
+      var lx = anchor === "start" ? Math.max(px - 6, 2) : (anchor === "end" ? Math.min(px + 6, W - 2) : px);
+      svg.appendChild(el("text", { x: lx, y: T - 20, "text-anchor": anchor, "font-size": 15, "font-weight": 700, fill: "#C8161F" }, "あなた " + num(v) + C.unit));
+      svg.setAttribute("aria-label", (sex === "m" ? "男性" : "女性") + "・" + r.label + "の分布の中で、" + num(v) + C.unit + "の位置。" + C.sideWord + "人の割合は" + r.text);
+      document.getElementById("fig1cap").innerHTML = "";
+      var cap = document.getElementById("fig1cap");
+      var b = document.createElement("b");
+      b.textContent = (sex === "m" ? "男性" : "女性") + "・" + r.label + "で" + num(v) + C.unit + "の人の位置";
+      cap.appendChild(b);
+      cap.appendChild(document.createTextNode("。区分の平均" + r.mean.toFixed(C.dec) + C.unit + "・標準偏差" + r.sd.toFixed(C.dec) + "から描いた分布です。点線は平均、赤い塗りは" + C.sideWord + "人の割合（" + r.text + "）を表します。"));
+    }
+
     var out = document.getElementById("result");
     function show() {
       var sex = document.getElementById("sex").value;
-      var ageV = document.getElementById("age").value, kgV = document.getElementById("kg").value;
-      var age = Number(ageV), kg = Number(kgV);
-      if (ageV === "" || kgV === "" || !isFinite(age) || !isFinite(kg) || age < 0 || kg < 0) {
-        out.textContent = "年齢と握力を入れてください。"; return;
+      var ageV = document.getElementById("age").value, vV = document.getElementById("val").value;
+      var age = Number(ageV), v = Number(vV);
+      out.innerHTML = "";
+      var msg = document.createElement("span"); msg.className = "msg";
+      if (ageV === "" || vV === "" || !isFinite(age) || !isFinite(v) || age < 0 || v < 0) {
+        msg.textContent = "年齢と" + C.short + "を入れてください。"; out.appendChild(msg); return;
       }
       age = Math.floor(age);
-      if (age >= 80) { out.textContent = "80歳以上は、元の調査にデータがないため計算できません。"; return; }
-      if (age < 6) { out.textContent = "6歳未満は、元の調査にデータがないため計算できません。"; return; }
-      var r = window.gripCalc(sex, age, kg);
-      var label = r.cell[0] === r.cell[1] ? r.cell[0] + "歳" : r.cell[0] + "〜" + r.cell[1] + "歳";
-      out.innerHTML = "";
-      var b = document.createElement("div"); b.className = "big"; b.textContent = "上位" + fmt(r.p) + "の目安";
+      var first = C.cells[0], last = C.cells[C.cells.length - 1];
+      if (age < first.lo) { msg.textContent = C.lowMsg; out.appendChild(msg); return; }
+      if (last.hi !== null && age > last.hi) { msg.textContent = (last.hi + 1) + "歳以上は、元の調査にデータがないため計算できません。"; out.appendChild(msg); return; }
+      var r = window.npCalc(sex, age, v);
+      if (!r) { msg.textContent = age + "歳は、元の調査にデータがないため計算できません。"; out.appendChild(msg); return; }
+      var big = document.createElement("div"); big.className = "big";
+      var pre = document.createElement("span"); pre.className = "pre"; pre.textContent = C.prefix;
+      big.appendChild(pre); big.appendChild(document.createTextNode(r.text));
+      if (C.suffix) { var post = document.createElement("span"); post.className = "post"; post.textContent = C.suffix; big.appendChild(post); }
       var s = document.createElement("div"); s.className = "sub";
-      s.textContent = (sex === "m" ? "男性 " : "女性 ") + label + "の区分（平均" + r.mean.toFixed(2) + "kg、標準偏差" + r.sd.toFixed(2) + "）と比べた推定です。";
-      out.appendChild(b); out.appendChild(s);
+      s.textContent = (sex === "m" ? "男性 " : "女性 ") + r.label + "の区分（平均" + r.mean.toFixed(C.dec) + C.unit + "、標準偏差" + r.sd.toFixed(C.dec) + "）と比べた推定です。";
+      out.appendChild(big); out.appendChild(s);
+      draw(sex, r, v);
     }
-    document.getElementById("go").addEventListener("click", show);
-    document.getElementById("calc").addEventListener("keydown", function (e) { if (e.key === "Enter") show(); });
+    document.getElementById("calc").addEventListener("submit", function (e) { e.preventDefault(); show(); });
+
+    // 開いた時点で、入力欄に入っている例の値で計算し、図1も同じ値で描く
+    show();
   })();
   </script>
 </body>

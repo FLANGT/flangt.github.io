@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>身長の平均は？年代別・男女別の早見表と、高い方から何%かの目安｜N%</title>
+  <meta name="description" content="身長の平均を年代別・男女別の早見表で紹介。性別・年齢・身長を入れると、同じ年代・性別の中で高い方から何%かの目安がわかる計算ツール付き。厚生労働省「令和6年国民健康・栄養調査」をもとにした推定です。">
+  <link rel="canonical" href="https://flangt.github.io/height/">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="N%">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="身長の平均は？年代別・男女別の早見表と、高い方から何%かの目安">
+  <meta property="og:description" content="身長の平均を年代別・男女別の早見表で紹介。性別・年齢・身長を入れると、同じ年代・性別の中で高い方から何%かの目安がわかる計算ツール付き。厚生労働省「令和6年国民健康・栄養調査」をもとにした推定です。">
+  <meta property="og:url" content="https://flangt.github.io/height/">
+  <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&text=N%25&display=swap">
+  <style>
+    /* 色の決まり（B案：データ図鑑）。常に明るい配色に固定し、ダークモードでも切り替えない */
+    :root {
+      color-scheme: light;
+      --paper: #F6F3EC;  /* 背景の紙 */
+      --ink: #1A1A1A;    /* 文字（紙の上で 15.7:1） */
+      --red: #E8202A;    /* 差し色。大きい数字・図の塗り・アイコンに使う（紙の上で 4.06:1 なので小さい文字には使わない） */
+      --red-text: #C8161F; /* 16px未満の赤い文字（紙の上で 5.28:1、白の上で 5.85:1） */
+      --sub: #6B655E;    /* 補助文字（紙の上で 5.19:1、白の上で 5.76:1） */
+      --rule: #DDD6CA;   /* 罫線 */
+      --white: #FFFFFF;  /* 図や入力欄の面 */
+      --radius: 4px;     /* 角丸は小さく */
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--paper); }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      font-weight: 400;
+      line-height: 1.9;
+      overflow-wrap: anywhere;
+      -webkit-text-size-adjust: 100%;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+    a { color: var(--ink); }
+
+    /* 上部の帯 */
+    .topbar { border-bottom: 1px solid var(--rule); }
+    .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; }
+    .logo { font-family: "Dela Gothic One", sans-serif; color: var(--red); text-decoration: none; font-size: 26px; line-height: 1; padding: 8px 0; }
+    .tagline { font-size: 12px; color: var(--sub); line-height: 1.5; text-align: right; }
+
+    /* 見出しまわり */
+    main.wrap { padding-top: 48px; }
+    .kicker { color: var(--red-text); font-size: 12px; font-weight: 700; letter-spacing: 0.22em; margin: 0 0 12px; }
+    h1 { font-size: clamp(24px, 5.6vw, 36px); font-weight: 900; line-height: 1.45; margin: 0 0 20px; }
+    .hero { display: flex; align-items: center; gap: 28px; margin: 0 0 20px; }
+    .hero h1 { flex: 1 1 auto; margin: 0; min-width: 0; }
+    .illus { flex: none; width: 180px; }
+    .illus svg { display: block; width: 100%; height: auto; }
+    .lead { font-size: 16px; margin: 0 0 32px; }
+    mark { background: linear-gradient(transparent 62%, rgba(232, 32, 42, 0.22) 62%); color: inherit; font-weight: 700; padding: 0 1px; }
+
+    /* 図の枠 */
+    .panel { background: var(--white); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; }
+    figure { margin: 0 0 32px; }
+    .figcap { font-size: 13px; color: var(--sub); line-height: 1.7; margin: 0 0 12px; }
+    .figcap b { color: var(--ink); }
+    .panel svg { display: block; width: 100%; height: auto; max-width: 520px; margin: 0 auto; }
+
+    /* 男女の代表値 */
+    .reps { border-top: 3px solid var(--ink); display: grid; grid-template-columns: 1fr 1fr; }
+    .rep { padding: 16px 0 4px; min-width: 0; }
+    .rep + .rep { border-left: 1px solid var(--rule); padding-left: 20px; }
+    .rep .lab { font-size: 14px; font-weight: 700; }
+    .rep .num { font-size: clamp(36px, 9.5vw, 52px); font-weight: 900; line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .rep .num small { font-size: 16px; font-weight: 700; margin-left: 4px; }
+    .rep .cap { font-size: 12px; color: var(--sub); line-height: 1.6; }
+
+    /* 番号つきの章 */
+    .ch { margin: 64px 0 0; }
+    .no { display: block; color: var(--red-text); font-size: 14px; font-weight: 700; letter-spacing: 0.12em; font-variant-numeric: tabular-nums; line-height: 1.4; }
+    h2 { font-size: clamp(20px, 4.6vw, 26px); font-weight: 900; line-height: 1.5; margin: 4px 0 20px; padding: 0 0 12px; border-bottom: 1px solid var(--rule); }
+    h3 { font-size: 15px; font-weight: 700; margin: 28px 0 8px; }
+    p { margin: 0 0 16px; }
+    .note { font-size: 14px; }
+
+    /* 計算ツール */
+    .fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; color: var(--sub); line-height: 1.5; }
+    .field select, .field input {
+      width: 100%; min-height: 44px; font: inherit; font-size: 18px; font-weight: 700; color: var(--ink);
+      padding: 6px 2px; border: 0; border-bottom: 2px solid var(--ink); border-radius: 0; background-color: transparent;
+      -webkit-appearance: none; appearance: none;
+    }
+    .field select {
+      padding-right: 20px; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231A1A1A' stroke-width='2'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 4px center;
+    }
+    .field input::placeholder { color: var(--sub); font-weight: 400; }
+    .field select:focus, .field input:focus { outline: none; border-bottom-width: 3px; padding-bottom: 5px; }
+    .go {
+      margin: 20px 0 0; min-height: 48px; padding: 10px 36px; font: inherit; font-size: 16px; font-weight: 700;
+      background: var(--ink); color: var(--white); border: 0; border-radius: var(--radius); cursor: pointer;
+    }
+    .go:focus-visible { outline: 2px solid var(--red-text); outline-offset: 2px; }
+    .result { display: flex; align-items: center; gap: 8px 20px; flex-wrap: wrap; margin: 20px 0 0; padding: 16px 0 0; border-top: 1px solid var(--rule); min-height: 76px; }
+    .result .big { color: var(--red); font-weight: 900; font-size: 40px; line-height: 1.15; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .result .big .pre { color: var(--ink); font-size: 15px; font-weight: 700; margin-right: 6px; }
+    .result .big .post { color: var(--ink); font-size: 15px; font-weight: 700; margin-left: 4px; }
+    .result .sub { flex: 1 1 220px; font-size: 13px; color: var(--sub); line-height: 1.7; }
+    .result .msg { font-size: 14px; }
+    .appnote { font-size: 12px; line-height: 1.7; color: var(--sub); margin: 16px 0 0; }
+
+    /* 表（罫線だけ） */
+    .tw { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 16px; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+    th, td { padding: 8px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--rule); }
+    thead th { font-size: 12px; font-weight: 700; color: var(--sub); border-bottom: 2px solid var(--ink); }
+    thead th:first-child, tbody th { text-align: left; }
+    thead tr.grp th { color: var(--ink); text-align: center; border-bottom: 1px solid var(--rule); }
+    tbody th { font-weight: 700; }
+    td.max { color: var(--red-text); font-weight: 700; }
+    .scrollhint { display: none; font-size: 12px; color: var(--sub); margin: 0 0 4px; }
+    tr.total th, tr.total td { border-top: 2px solid var(--ink); }
+    details { margin: 0 0 16px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    summary { cursor: pointer; font-weight: 700; font-size: 14px; padding: 12px 0; min-height: 44px; }
+    details[open] summary { border-bottom: 1px solid var(--rule); }
+
+    /* 末尾の案内 */
+    .app { margin: 72px 0 0; padding: 24px 0 0; border-top: 3px solid var(--ink); display: flex; gap: 16px; align-items: flex-start; }
+    .icon {
+      flex: none; width: 64px; height: 64px; border-radius: 14px; background: var(--red); color: var(--white);
+      font-family: "Dela Gothic One", sans-serif; font-size: 22px; line-height: 1; display: flex; align-items: center; justify-content: center;
+    }
+    .app h2 { font-size: 18px; border: 0; padding: 0; margin: 0 0 6px; }
+    .app p { font-size: 14px; margin: 0 0 8px; }
+    .app .cta { color: var(--red-text); font-weight: 700; text-decoration: none; display: inline-block; padding: 8px 0; }
+    .app .cta:hover { text-decoration: underline; }
+    footer { margin: 48px 0 0; padding: 20px 0 40px; border-top: 1px solid var(--rule); font-size: 12px; color: var(--sub); }
+
+    @media (max-width: 480px) {
+      .wrap { padding: 0 16px; }
+      .panel { padding: 16px 12px; }
+      .fields { gap: 10px; }
+      .field select, .field input { font-size: 16px; }
+      .rep + .rep { padding-left: 14px; }
+      .result .big { font-size: 34px; }
+      th, td { padding: 8px 6px; }
+      table { font-size: 13px; }
+      .scrollhint { display: block; }
+      .hero { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .illus { width: 40%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <a class="logo" href="/">N%</a>
+      <span class="tagline">データで見る、日本の「ふつう」</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="kicker">DATA ／ 体格</p>
+    <div class="hero">
+      <h1>身長の平均は？年代別・男女別に見る、あなたの位置</h1>
+      <div class="illus" aria-hidden="true">
+        <svg viewBox="0 0 246 214" xmlns="http://www.w3.org/2000/svg">
+          <line x1="6" x2="156" y1="200" y2="200" stroke="#DDD6CA" stroke-width="2"/>
+          <line x1="156" x2="156" y1="200" y2="24.0" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="148" x2="156" y1="200.0" y2="200.0" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="190.2" y2="190.2" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="180.4" y2="180.4" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="170.7" y2="170.7" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="160.9" y2="160.9" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="148" x2="156" y1="151.1" y2="151.1" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="141.3" y2="141.3" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="131.6" y2="131.6" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="121.8" y2="121.8" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="112.0" y2="112.0" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="148" x2="156" y1="102.2" y2="102.2" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="92.4" y2="92.4" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="82.7" y2="82.7" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="72.9" y2="72.9" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="63.1" y2="63.1" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="148" x2="156" y1="53.3" y2="53.3" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="43.6" y2="43.6" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="33.8" y2="33.8" stroke="#6B655E" stroke-width="1.5"/>
+          <line x1="152" x2="156" y1="24.0" y2="24.0" stroke="#6B655E" stroke-width="1.5"/>
+          <g fill="#1A1A1A"><circle cx="40.0" cy="46.9" r="11.5"/><rect x="18.6" y="61.7" width="42.8" height="60.9" rx="8.2"/><rect x="5.4" y="63.3" width="9.9" height="49.4" rx="4.9"/><rect x="64.7" y="63.3" width="9.9" height="49.4" rx="4.9"/><rect x="21.1" y="117.7" width="17.3" height="82.3" rx="8.6"/><rect x="41.6" y="117.7" width="17.3" height="82.3" rx="8.6"/></g>
+          <g fill="#E8202A"><circle cx="114.0" cy="59.1" r="10.6"/><rect x="94.3" y="72.8" width="39.4" height="56.0" rx="7.6"/><rect x="82.2" y="74.3" width="9.1" height="45.4" rx="4.5"/><rect x="136.7" y="74.3" width="9.1" height="45.4" rx="4.5"/><rect x="96.6" y="124.3" width="15.9" height="75.7" rx="8.0"/><rect x="115.5" y="124.3" width="15.9" height="75.7" rx="8.0"/></g>
+          <line x1="40.0" x2="156" y1="35.3" y2="35.3" stroke="#1A1A1A" stroke-width="1" stroke-dasharray="2 2"/>
+          <text x="162" y="33.4" font-size="19.5" font-weight="700" fill="#1A1A1A">168.4<tspan font-weight="400">cm</tspan></text>
+          <line x1="114.0" x2="156" y1="48.5" y2="48.5" stroke="#E8202A" stroke-width="1" stroke-dasharray="2 2"/>
+          <text x="162" y="64.6" font-size="19.5" font-weight="700" fill="#1A1A1A">154.9<tspan font-weight="400">cm</tspan></text>
+        </svg>
+      </div>
+    </div>
+    <p class="lead">20歳以上の身長の平均は、男性<mark>168.4cm</mark>、女性<mark>154.9cm</mark>です。たとえば20〜29歳の男性で174cmなら、同じ区分の中で高い方から<mark>約32%</mark>です。</p>
+
+    <figure>
+      <div class="panel">
+        <p class="figcap" id="fig1cap"><b>男性・20〜29歳で174cmの人の位置</b>。区分の平均171.4cm・標準偏差5.5から描いた分布です。点線は平均、赤い塗りはそれより高い人の割合（32%）を表します。</p>
+        <svg id="fig1" viewBox="0 0 400 220" role="img" aria-label="男性・20〜29歳の分布の中で、174cmの位置"></svg>
+      </div>
+    </figure>
+
+    <div class="reps">
+      <div class="rep"><div class="lab">男性</div><div class="num">168.4<small>cm</small></div><div class="cap">20歳以上の平均</div></div>
+      <div class="rep"><div class="lab">女性</div><div class="num">154.9<small>cm</small></div><div class="cap">20歳以上の平均</div></div>
+    </div>
+
+    <section class="ch" id="calc-tool">
+      <span class="no">01</span>
+      <h2>あなたの身長は高い方から何%？ 計算ツール</h2>
+      <p>性別・年齢・身長を入れると、同じ性別・同じ年齢の区分の中で、高い方から何%くらいかの目安を出します。高い・低いに良し悪しはありません。</p>
+      <form class="panel" id="calc" novalidate>
+        <div class="fields">
+          <div class="field"><label for="sex">性別</label>
+            <select id="sex"><option value="m" selected>男性</option><option value="f">女性</option></select></div>
+          <div class="field"><label for="age">年齢（歳）</label>
+            <input id="age" type="number" inputmode="numeric" min="0" max="120" step="1" placeholder="例：22" value="22"></div>
+          <div class="field"><label for="val">身長（cm）</label>
+            <input id="val" type="number" inputmode="decimal" min="0" max="250" step="0.1" placeholder="例：174" value="174"></div>
+        </div>
+        <button type="submit" class="go">計算する</button>
+        <div class="result" id="result" role="status" aria-live="polite"><div class="big"><span class="pre">高い方から</span>32%</div><div class="sub">男性 20〜29歳の区分（平均171.4cm、標準偏差5.5）と比べた推定です。</div></div>
+        <p class="appnote">N%アプリは、身長を5cmごとの区分から選んで答え、区分のいちばん下の値（たとえば170〜174cmなら170cm）で計算します。このページは入力した値そのままで計算するため、同じ身長でも数字が違うことがあります。</p>
+      </form>
+      <noscript><p class="note">計算ツールにはJavaScriptが必要です。下の早見表をご覧ください。</p></noscript>
+    </section>
+
+    <section class="ch" id="trend">
+      <span class="no">02</span>
+      <h2>年代別の平均の推移</h2>
+      <figure>
+        <div class="panel">
+          <p class="figcap">20歳以上の、年代別の身長の平均（cm）。黒い線が男性、赤い線が女性。横軸は年齢の区分で、点は各区分の平均です。</p>
+          <svg viewBox="0 0 400 286" role="img" aria-label="身長の、20歳以上の年代別の平均。男性と女性の折れ線">
+            <line x1="40" x2="356" y1="216.0" y2="216.0" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="220.0" text-anchor="end" font-size="12" fill="#6B655E">145</text>
+            <line x1="40" x2="356" y1="182.7" y2="182.7" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="186.7" text-anchor="end" font-size="12" fill="#6B655E">150</text>
+            <line x1="40" x2="356" y1="149.3" y2="149.3" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="153.3" text-anchor="end" font-size="12" fill="#6B655E">155</text>
+            <line x1="40" x2="356" y1="116.0" y2="116.0" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="120.0" text-anchor="end" font-size="12" fill="#6B655E">160</text>
+            <line x1="40" x2="356" y1="82.7" y2="82.7" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="86.7" text-anchor="end" font-size="12" fill="#6B655E">165</text>
+            <line x1="40" x2="356" y1="49.3" y2="49.3" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="53.3" text-anchor="end" font-size="12" fill="#6B655E">170</text>
+            <line x1="40" x2="356" y1="16.0" y2="16.0" stroke="#DDD6CA" stroke-width="1"/>
+            <text x="34" y="20.0" text-anchor="end" font-size="12" fill="#6B655E">175</text>
+            <text x="57.6" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 57.6 228)">20〜29歳</text>
+            <text x="92.7" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 92.7 228)">30〜39歳</text>
+            <text x="127.8" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 127.8 228)">40〜49歳</text>
+            <text x="162.9" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 162.9 228)">50〜59歳</text>
+            <text x="198.0" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 198.0 228)">60〜64歳</text>
+            <text x="233.1" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 233.1 228)">65〜69歳</text>
+            <text x="268.2" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 268.2 228)">70〜74歳</text>
+            <text x="303.3" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 303.3 228)">75〜79歳</text>
+            <text x="338.4" y="228" text-anchor="end" font-size="12" fill="#6B655E" transform="rotate(-45 338.4 228)">80歳以上</text>
+            <polyline points="57.6,40.0 92.7,38.7 127.8,38.7 162.9,46.0 198.0,53.3 233.1,60.0 268.2,76.7 303.3,84.0 338.4,102.7" fill="none" stroke="#1A1A1A" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="57.6" cy="40.0" r="3.5" fill="#1A1A1A"><title>男性 20〜29歳：171.4cm</title></circle>
+            <circle cx="92.7" cy="38.7" r="3.5" fill="#1A1A1A"><title>男性 30〜39歳：171.6cm</title></circle>
+            <circle cx="127.8" cy="38.7" r="3.5" fill="#1A1A1A"><title>男性 40〜49歳：171.6cm</title></circle>
+            <circle cx="162.9" cy="46.0" r="3.5" fill="#1A1A1A"><title>男性 50〜59歳：170.5cm</title></circle>
+            <circle cx="198.0" cy="53.3" r="3.5" fill="#1A1A1A"><title>男性 60〜64歳：169.4cm</title></circle>
+            <circle cx="233.1" cy="60.0" r="3.5" fill="#1A1A1A"><title>男性 65〜69歳：168.4cm</title></circle>
+            <circle cx="268.2" cy="76.7" r="3.5" fill="#1A1A1A"><title>男性 70〜74歳：165.9cm</title></circle>
+            <circle cx="303.3" cy="84.0" r="3.5" fill="#1A1A1A"><title>男性 75〜79歳：164.8cm</title></circle>
+            <circle cx="338.4" cy="102.7" r="3.5" fill="#1A1A1A"><title>男性 80歳以上：162.0cm</title></circle>
+            <text x="346.4" y="106.7" font-size="12" font-weight="700" fill="#1A1A1A">男性</text>
+            <polyline points="57.6,129.3 92.7,129.3 127.8,128.0 162.9,132.0 198.0,140.7 233.1,152.0 268.2,165.3 303.3,177.3 338.4,192.0" fill="none" stroke="#E8202A" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="57.6" cy="129.3" r="3.5" fill="#E8202A"><title>女性 20〜29歳：158.0cm</title></circle>
+            <circle cx="92.7" cy="129.3" r="3.5" fill="#E8202A"><title>女性 30〜39歳：158.0cm</title></circle>
+            <circle cx="127.8" cy="128.0" r="3.5" fill="#E8202A"><title>女性 40〜49歳：158.2cm</title></circle>
+            <circle cx="162.9" cy="132.0" r="3.5" fill="#E8202A"><title>女性 50〜59歳：157.6cm</title></circle>
+            <circle cx="198.0" cy="140.7" r="3.5" fill="#E8202A"><title>女性 60〜64歳：156.3cm</title></circle>
+            <circle cx="233.1" cy="152.0" r="3.5" fill="#E8202A"><title>女性 65〜69歳：154.6cm</title></circle>
+            <circle cx="268.2" cy="165.3" r="3.5" fill="#E8202A"><title>女性 70〜74歳：152.6cm</title></circle>
+            <circle cx="303.3" cy="177.3" r="3.5" fill="#E8202A"><title>女性 75〜79歳：150.8cm</title></circle>
+            <circle cx="338.4" cy="192.0" r="3.5" fill="#E8202A"><title>女性 80歳以上：148.6cm</title></circle>
+            <text x="346.4" y="196.0" font-size="12" font-weight="700" fill="#1A1A1A">女性</text>
+          </svg>
+        </div>
+      </figure>
+    </section>
+
+    <section class="ch" id="table">
+      <span class="no">03</span>
+      <h2>身長の平均：年代別・男女別の表</h2>
+      <p>20〜59歳の平均は男性170.5〜171.6cm、女性157.6〜158.2cmとほぼ同じで、それより上の年代ほど低くなり、80歳以上では男性162.0cm、女性148.6cmです。20〜59歳は10歳ごと、60〜79歳は5歳ごと、その上は80歳以上をまとめた表で、いちばん下の行は20歳以上全体の平均です。単位はcm。標準偏差は、人によるばらつきの大きさを表す数字です（小さいほど、みんな平均の近くに集まっています）。赤字は、表ごとに男女それぞれで平均がいちばん高い区分です。</p>
+<div class="tw"><table><thead>
+<tr class="grp"><th scope="col" rowspan="2">年齢</th><th scope="colgroup" colspan="2">男性</th><th scope="colgroup" colspan="2">女性</th></tr>
+<tr><th scope="col">平均(cm)</th><th scope="col">標準偏差</th><th scope="col">平均(cm)</th><th scope="col">標準偏差</th></tr>
+</thead><tbody>
+<tr><th scope="row">20〜29歳</th><td>171.4</td><td>5.5</td><td>158.0</td><td>5.0</td></tr>
+<tr><th scope="row">30〜39歳</th><td class="max">171.6</td><td>4.8</td><td>158.0</td><td>4.4</td></tr>
+<tr><th scope="row">40〜49歳</th><td class="max">171.6</td><td>4.4</td><td class="max">158.2</td><td>4.1</td></tr>
+<tr><th scope="row">50〜59歳</th><td>170.5</td><td>4.5</td><td>157.6</td><td>4.3</td></tr>
+<tr><th scope="row">60〜64歳</th><td>169.4</td><td>4.5</td><td>156.3</td><td>4.2</td></tr>
+<tr><th scope="row">65〜69歳</th><td>168.4</td><td>4.4</td><td>154.6</td><td>4.2</td></tr>
+<tr><th scope="row">70〜74歳</th><td>165.9</td><td>4.3</td><td>152.6</td><td>4.1</td></tr>
+<tr><th scope="row">75〜79歳</th><td>164.8</td><td>4.4</td><td>150.8</td><td>3.9</td></tr>
+<tr><th scope="row">80歳以上</th><td>162.0</td><td>4.7</td><td>148.6</td><td>4.7</td></tr>
+<tr class="total"><th scope="row">20歳以上の平均</th><td>168.4</td><td>5.2</td><td>154.9</td><td>5.1</td></tr>
+</tbody></table></div>
+      <details>
+        <summary>10〜19歳（1歳ごと）の表を見る</summary>
+<div class="tw"><table><thead>
+<tr class="grp"><th scope="col" rowspan="2">年齢</th><th scope="colgroup" colspan="2">男性</th><th scope="colgroup" colspan="2">女性</th></tr>
+<tr><th scope="col">平均(cm)</th><th scope="col">標準偏差</th><th scope="col">平均(cm)</th><th scope="col">標準偏差</th></tr>
+</thead><tbody>
+<tr><th scope="row">10歳</th><td>138.1</td><td>4.5</td><td>138.2</td><td>4.2</td></tr>
+<tr><th scope="row">11歳</th><td>145.6</td><td>5.9</td><td>147.9</td><td>4.9</td></tr>
+<tr><th scope="row">12歳</th><td>152.6</td><td>6.0</td><td>150.0</td><td>5.1</td></tr>
+<tr><th scope="row">13歳</th><td>161.2</td><td>5.6</td><td>153.8</td><td>4.8</td></tr>
+<tr><th scope="row">14歳</th><td>165.0</td><td>6.1</td><td>156.6</td><td>4.0</td></tr>
+<tr><th scope="row">15歳</th><td>167.3</td><td>6.4</td><td>158.2</td><td>3.8</td></tr>
+<tr><th scope="row">16歳</th><td>169.1</td><td>5.0</td><td>156.8</td><td>4.3</td></tr>
+<tr><th scope="row">17歳</th><td>169.7</td><td>4.6</td><td>158.3</td><td>4.6</td></tr>
+<tr><th scope="row">18歳</th><td class="max">170.1</td><td>4.2</td><td>155.5</td><td>5.2</td></tr>
+<tr><th scope="row">19歳</th><td>169.1</td><td>5.1</td><td class="max">158.9</td><td>4.7</td></tr>
+</tbody></table></div>
+      </details>
+    </section>
+
+    <section class="ch" id="quick">
+      <span class="no">04</span>
+      <h2>身長別・高い方から何%の早見表</h2>
+      <p>代表的な年代の区分の平均と標準偏差から計算した、「その身長より高い人」の割合の目安です。身長はcmです。50%前後なら、同じ年代・性別のちょうど真ん中あたりです。</p>
+      <h3>男性（高い方から何%）</h3>
+      <p class="scrollhint">表は横にスクロールできます →</p>
+<div class="tw"><table><thead><tr><th scope="col">身長</th><th scope="col">20〜29歳</th><th scope="col">30〜39歳</th><th scope="col">40〜49歳</th><th scope="col">50〜59歳</th><th scope="col">60〜64歳</th><th scope="col">70〜74歳</th><th scope="col">80歳以上</th></tr></thead><tbody>
+<tr><th scope="row">155cm</th><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.179)">99%</td><td style="background:rgba(232,32,42,0.1677)">93%</td></tr>
+<tr><th scope="row">160cm</th><td style="background:rgba(232,32,42,0.1766)">98%</td><td style="background:rgba(232,32,42,0.1786)">99%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.1782)">99%</td><td style="background:rgba(232,32,42,0.1767)">98%</td><td style="background:rgba(232,32,42,0.1647)">91%</td><td style="background:rgba(232,32,42,0.1197)">66%</td></tr>
+<tr><th scope="row">165cm</th><td style="background:rgba(232,32,42,0.158)">88%</td><td style="background:rgba(232,32,42,0.1648)">92%</td><td style="background:rgba(232,32,42,0.168)">93%</td><td style="background:rgba(232,32,42,0.1601)">89%</td><td style="background:rgba(232,32,42,0.1505)">84%</td><td style="background:rgba(232,32,42,0.1049)">58%</td><td style="background:rgba(232,32,42,0.0471)">26%</td></tr>
+<tr><th scope="row">170cm</th><td style="background:rgba(232,32,42,0.1081)">60%</td><td style="background:rgba(232,32,42,0.1135)">63%</td><td style="background:rgba(232,32,42,0.1155)">64%</td><td style="background:rgba(232,32,42,0.098)">54%</td><td style="background:rgba(232,32,42,0.0805)">45%</td><td style="background:rgba(232,32,42,0.0306)">17%</td><td style="background:rgba(232,32,42,0.008)">4.4%</td></tr>
+<tr><th scope="row">175cm</th><td style="background:rgba(232,32,42,0.0461)">26%</td><td style="background:rgba(232,32,42,0.0431)">24%</td><td style="background:rgba(232,32,42,0.0396)">22%</td><td style="background:rgba(232,32,42,0.0286)">16%</td><td style="background:rgba(232,32,42,0.0192)">11%</td><td style="background:rgba(232,32,42,0.0031)">1.7%</td><td style="background:rgba(232,32,42,0.0005)">0.3%</td></tr>
+<tr><th scope="row">180cm</th><td style="background:rgba(232,32,42,0.0106)">5.9%</td><td style="background:rgba(232,32,42,0.0072)">4.0%</td><td style="background:rgba(232,32,42,0.0051)">2.8%</td><td style="background:rgba(232,32,42,0.0031)">1.7%</td><td style="background:rgba(232,32,42,0.0017)">0.9%</td><td>0.1%未満</td><td>0.1%未満</td></tr>
+<tr><th scope="row">185cm</th><td style="background:rgba(232,32,42,0.0012)">0.7%</td><td style="background:rgba(232,32,42,0.0005)">0.3%</td><td style="background:rgba(232,32,42,0.0002)">0.1%</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td></tr>
+<tr><th scope="row">190cm</th><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td></tr>
+</tbody></table></div>
+      <h3>女性（高い方から何%）</h3>
+      <p class="scrollhint">表は横にスクロールできます →</p>
+<div class="tw"><table><thead><tr><th scope="col">身長</th><th scope="col">20〜29歳</th><th scope="col">30〜39歳</th><th scope="col">40〜49歳</th><th scope="col">50〜59歳</th><th scope="col">60〜64歳</th><th scope="col">70〜74歳</th><th scope="col">80歳以上</th></tr></thead><tbody>
+<tr><th scope="row">140cm</th><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.1739)">97%</td></tr>
+<tr><th scope="row">145cm</th><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.18)">ほぼ100%</td><td style="background:rgba(232,32,42,0.1743)">97%</td><td style="background:rgba(232,32,42,0.1401)">78%</td></tr>
+<tr><th scope="row">150cm</th><td style="background:rgba(232,32,42,0.1701)">95%</td><td style="background:rgba(232,32,42,0.1738)">97%</td><td style="background:rgba(232,32,42,0.1759)">98%</td><td style="background:rgba(232,32,42,0.1731)">96%</td><td style="background:rgba(232,32,42,0.168)">93%</td><td style="background:rgba(232,32,42,0.1327)">74%</td><td style="background:rgba(232,32,42,0.0689)">38%</td></tr>
+<tr><th scope="row">155cm</th><td style="background:rgba(232,32,42,0.1306)">73%</td><td style="background:rgba(232,32,42,0.1354)">75%</td><td style="background:rgba(232,32,42,0.1408)">78%</td><td style="background:rgba(232,32,42,0.1309)">73%</td><td style="background:rgba(232,32,42,0.1119)">62%</td><td style="background:rgba(232,32,42,0.0502)">28%</td><td style="background:rgba(232,32,42,0.0156)">8.7%</td></tr>
+<tr><th scope="row">160cm</th><td style="background:rgba(232,32,42,0.062)">34%</td><td style="background:rgba(232,32,42,0.0584)">32%</td><td style="background:rgba(232,32,42,0.0595)">33%</td><td style="background:rgba(232,32,42,0.0519)">29%</td><td style="background:rgba(232,32,42,0.0341)">19%</td><td style="background:rgba(232,32,42,0.0064)">3.6%</td><td style="background:rgba(232,32,42,0.0014)">0.8%</td></tr>
+<tr><th scope="row">165cm</th><td style="background:rgba(232,32,42,0.0145)">8.1%</td><td style="background:rgba(232,32,42,0.01)">5.6%</td><td style="background:rgba(232,32,42,0.0087)">4.9%</td><td style="background:rgba(232,32,42,0.0077)">4.3%</td><td style="background:rgba(232,32,42,0.0034)">1.9%</td><td style="background:rgba(232,32,42,0.0002)">0.1%</td><td>0.1%未満</td></tr>
+<tr><th scope="row">170cm</th><td style="background:rgba(232,32,42,0.0015)">0.8%</td><td style="background:rgba(232,32,42,0.0006)">0.3%</td><td style="background:rgba(232,32,42,0.0004)">0.2%</td><td style="background:rgba(232,32,42,0.0004)">0.2%</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td></tr>
+<tr><th scope="row">175cm</th><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td><td>0.1%未満</td></tr>
+</tbody></table></div>
+    </section>
+
+    <section class="ch" id="caution">
+      <h2>この割合についての注意</h2>
+      <p class="note">このページの割合は、平均値と標準偏差から正規分布を仮定して計算した推定です。実際の分布とずれる場合があります。測定条件や個人差もあります。</p>
+    </section>
+
+    <section class="ch" id="source">
+      <h2>出典</h2>
+      <p class="note">
+        調査名：令和6年国民健康・栄養調査<br>
+        提供元：厚生労働省<br>
+        調査年：2024年（令和6年）<br>
+        表：第14表 身長・体重の平均値及び標準偏差（全国補正値、男性・女性、1歳以上〔体重は妊婦除外〕）<br>
+        URL：<a href="https://www.e-stat.go.jp/stat-search/files?toukei=00450171&amp;tstat=000001041744&amp;statInfId=000040502147" target="_blank" rel="noopener">https://www.e-stat.go.jp/stat-search/files?toukei=00450171&amp;tstat=000001041744&amp;statInfId=000040502147</a><br>
+        出典：厚生労働省『令和6年国民健康・栄養調査』を加工して作成<br>
+        ライセンス：政府標準利用規約2.0（CC BY 4.0互換）
+      </p>
+    </section>
+
+    <aside class="app">
+      <div class="icon" aria-hidden="true">N%</div>
+      <div>
+        <h2>ほかの項目でも、自分の位置を</h2>
+        <p>年収・握力・趣味など約110項目を、全国の統計で見られるアプリ『N%』を、個人で作っています。</p>
+        <a class="cta" href="https://apps.apple.com/jp/app/id6834828485">App Storeで見る →</a>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div class="wrap">運営：FLANGT ／ © 2026 FLANGT</div>
+  </footer>
+
+  <script>
+  (function () {
+    // 生成スクリプト（n_percent/tools/seo_pages/build.py）が項目ファイルから書き出した設定と数字
+    var C = {"short":"身長","unit":"cm","dec":1,"prefix":"高い方から","suffix":"","sideWord":"それより高い","lowMsg":"9歳以下は、データがありません。","cells":[{"key":"10-10","lo":10,"hi":10},{"key":"11-11","lo":11,"hi":11},{"key":"12-12","lo":12,"hi":12},{"key":"13-13","lo":13,"hi":13},{"key":"14-14","lo":14,"hi":14},{"key":"15-15","lo":15,"hi":15},{"key":"16-16","lo":16,"hi":16},{"key":"17-17","lo":17,"hi":17},{"key":"18-18","lo":18,"hi":18},{"key":"19-19","lo":19,"hi":19},{"key":"20-29","lo":20,"hi":29},{"key":"30-39","lo":30,"hi":39},{"key":"40-49","lo":40,"hi":49},{"key":"50-59","lo":50,"hi":59},{"key":"60-64","lo":60,"hi":64},{"key":"65-69","lo":65,"hi":69},{"key":"70-74","lo":70,"hi":74},{"key":"75-79","lo":75,"hi":79},{"key":"80+","lo":80,"hi":null}],"N":{"m|10-10":[138.1,4.5],"f|10-10":[138.2,4.2],"m|11-11":[145.6,5.9],"f|11-11":[147.9,4.9],"m|12-12":[152.6,6.0],"f|12-12":[150.0,5.1],"m|13-13":[161.2,5.6],"f|13-13":[153.8,4.8],"m|14-14":[165.0,6.1],"f|14-14":[156.6,4.0],"m|15-15":[167.3,6.4],"f|15-15":[158.2,3.8],"m|16-16":[169.1,5.0],"f|16-16":[156.8,4.3],"m|17-17":[169.7,4.6],"f|17-17":[158.3,4.6],"m|18-18":[170.1,4.2],"f|18-18":[155.5,5.2],"m|19-19":[169.1,5.1],"f|19-19":[158.9,4.7],"m|30-39":[171.6,4.8],"f|30-39":[158.0,4.4],"m|40-49":[171.6,4.4],"f|40-49":[158.2,4.1],"m|50-59":[170.5,4.5],"f|50-59":[157.6,4.3],"m|20-29":[171.4,5.5],"f|20-29":[158.0,5.0],"m|60-64":[169.4,4.5],"f|60-64":[156.3,4.2],"m|65-69":[168.4,4.4],"f|65-69":[154.6,4.2],"m|70-74":[165.9,4.3],"f|70-74":[152.6,4.1],"m|75-79":[164.8,4.4],"f|75-79":[150.8,3.9],"m|80+":[162.0,4.7],"f|80+":[148.6,4.7]},"example":{"sex":"m","age":22,"value":174}};
+    var SVGNS = "http://www.w3.org/2000/svg";
+
+    // 上側確率 1-Φ(z)。誤差関数の近似（Abramowitz & Stegun 7.1.26）
+    function upper(z) {
+      var x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.3275911 * x);
+      var poly = t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))));
+      var erf = 1 - poly * Math.exp(-x * x);
+      return z >= 0 ? 0.5 * (1 - erf) : 0.5 * (1 + erf);
+    }
+    // 割合の表記。99.5%以上は「ほぼ100%」、0.1%未満は「0.1%未満」
+    function fmt(p) {
+      if (p < 0.1) return "0.1%未満";
+      if (p >= 99.5) return "ほぼ100%";
+      var r1 = Math.round(p * 10) / 10;
+      if (r1 < 10) return r1.toFixed(1) + "%";
+      return Math.round(p) + "%";
+    }
+    // 年齢を、データにある区分に当てはめる（hi が null の区分は「〜歳以上」）
+    function cellOf(age) {
+      for (var i = 0; i < C.cells.length; i++) {
+        var c = C.cells[i];
+        if (age >= c.lo && (c.hi === null || age <= c.hi)) return c;
+      }
+      return null;
+    }
+    function cellLabel(c) {
+      if (c.hi === null) return c.lo + "歳以上";
+      return c.lo === c.hi ? c.lo + "歳" : c.lo + "〜" + c.hi + "歳";
+    }
+    function num(v) { return String(Math.round(v * 100) / 100); }
+    window.npCalc = function (sex, age, v) {
+      var c = cellOf(Math.floor(age));
+      if (!c) return null;
+      var ms = C.N[sex + "|" + c.key];
+      return { key: c.key, label: cellLabel(c), mean: ms[0], sd: ms[1], p: upper((v - ms[0]) / ms[1]) * 100, text: fmt(upper((v - ms[0]) / ms[1]) * 100) };
+    };
+
+    // 図1：区分の分布（正規分布）と、その人の位置
+    function el(name, attrs, text) {
+      var e = document.createElementNS(SVGNS, name);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      if (text != null) e.textContent = text;
+      return e;
+    }
+    function niceStep(range, maxTicks) {
+      var steps = [1, 2, 5, 10, 20, 50, 100];
+      for (var i = 0; i < steps.length; i++) if (range / steps[i] <= maxTicks) return steps[i];
+      return 100;
+    }
+    function draw(sex, r, v) {
+      var svg = document.getElementById("fig1");
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      var W = 400, H = 220, L = 14, R = 14, T = 52, B = 36, base = H - B;
+      var lo = r.mean - 4 * r.sd, hi = r.mean + 4 * r.sd;
+      // 値が範囲の外なら、6標準偏差までは範囲を広げ、それより外は端に寄せて描く
+      if (v < lo) lo = Math.max(v - 0.5 * r.sd, r.mean - 6 * r.sd);
+      if (v > hi) hi = Math.min(v + 0.5 * r.sd, r.mean + 6 * r.sd);
+      function X(x) { return L + (x - lo) / (hi - lo) * (W - L - R); }
+      function pdf(x) { var z = (x - r.mean) / r.sd; return Math.exp(-0.5 * z * z); }
+      function Y(d) { return base - d * (base - T - 4); }
+      var vc = Math.min(Math.max(v, lo), hi);
+      var pts = [], fill = [], n = 160;
+      for (var i = 0; i <= n; i++) {
+        var x = lo + (hi - lo) * i / n;
+        pts.push(X(x).toFixed(1) + "," + Y(pdf(x)).toFixed(1));
+        if (x >= vc) fill.push(X(x).toFixed(1) + "," + Y(pdf(x)).toFixed(1));
+      }
+      fill.unshift(X(vc).toFixed(1) + "," + Y(pdf(vc)).toFixed(1));
+      fill.unshift(X(vc).toFixed(1) + "," + base);
+      fill.push(X(hi).toFixed(1) + "," + base);
+      svg.appendChild(el("polygon", { points: fill.join(" "), fill: "rgba(232,32,42,0.16)" }));
+      svg.appendChild(el("polyline", { points: pts.join(" "), fill: "none", stroke: "#1A1A1A", "stroke-width": 2, "stroke-linejoin": "round" }));
+      // 平均の点線
+      svg.appendChild(el("line", { x1: X(r.mean), x2: X(r.mean), y1: base, y2: Y(1), stroke: "#6B655E", "stroke-width": 1, "stroke-dasharray": "3 3" }));
+      // 横軸と目盛り
+      svg.appendChild(el("line", { x1: L, x2: W - R, y1: base, y2: base, stroke: "#DDD6CA", "stroke-width": 1 }));
+      var step = niceStep(hi - lo, 7);
+      for (var t = Math.ceil(lo / step) * step; t <= hi; t += step) {
+        svg.appendChild(el("line", { x1: X(t), x2: X(t), y1: base, y2: base + 4, stroke: "#6B655E", "stroke-width": 1 }));
+        svg.appendChild(el("text", { x: X(t), y: base + 20, "text-anchor": "middle", "font-size": 13, fill: "#6B655E" }, String(t)));
+      }
+      // その人の位置：赤い縦線・点・ラベル
+      var px = X(vc), py = Y(pdf(vc));
+      svg.appendChild(el("line", { x1: px, x2: px, y1: base, y2: T - 12, stroke: "#E8202A", "stroke-width": 2 }));
+      svg.appendChild(el("circle", { cx: px, cy: py, r: 5, fill: "#E8202A", stroke: "#FFFFFF", "stroke-width": 2 }));
+      var anchor = px < 70 ? "start" : (px > W - 70 ? "end" : "middle");
+      var lx = anchor === "start" ? Math.max(px - 6, 2) : (anchor === "end" ? Math.min(px + 6, W - 2) : px);
+      svg.appendChild(el("text", { x: lx, y: T - 20, "text-anchor": anchor, "font-size": 15, "font-weight": 700, fill: "#C8161F" }, "あなた " + num(v) + C.unit));
+      svg.setAttribute("aria-label", (sex === "m" ? "男性" : "女性") + "・" + r.label + "の分布の中で、" + num(v) + C.unit + "の位置。" + C.sideWord + "人の割合は" + r.text);
+      document.getElementById("fig1cap").innerHTML = "";
+      var cap = document.getElementById("fig1cap");
+      var b = document.createElement("b");
+      b.textContent = (sex === "m" ? "男性" : "女性") + "・" + r.label + "で" + num(v) + C.unit + "の人の位置";
+      cap.appendChild(b);
+      cap.appendChild(document.createTextNode("。区分の平均" + r.mean.toFixed(C.dec) + C.unit + "・標準偏差" + r.sd.toFixed(C.dec) + "から描いた分布です。点線は平均、赤い塗りは" + C.sideWord + "人の割合（" + r.text + "）を表します。"));
+    }
+
+    var out = document.getElementById("result");
+    function show() {
+      var sex = document.getElementById("sex").value;
+      var ageV = document.getElementById("age").value, vV = document.getElementById("val").value;
+      var age = Number(ageV), v = Number(vV);
+      out.innerHTML = "";
+      var msg = document.createElement("span"); msg.className = "msg";
+      if (ageV === "" || vV === "" || !isFinite(age) || !isFinite(v) || age < 0 || v < 0) {
+        msg.textContent = "年齢と" + C.short + "を入れてください。"; out.appendChild(msg); return;
+      }
+      age = Math.floor(age);
+      var first = C.cells[0], last = C.cells[C.cells.length - 1];
+      if (age < first.lo) { msg.textContent = C.lowMsg; out.appendChild(msg); return; }
+      if (last.hi !== null && age > last.hi) { msg.textContent = (last.hi + 1) + "歳以上は、元の調査にデータがないため計算できません。"; out.appendChild(msg); return; }
+      var r = window.npCalc(sex, age, v);
+      if (!r) { msg.textContent = age + "歳は、元の調査にデータがないため計算できません。"; out.appendChild(msg); return; }
+      var big = document.createElement("div"); big.className = "big";
+      var pre = document.createElement("span"); pre.className = "pre"; pre.textContent = C.prefix;
+      big.appendChild(pre); big.appendChild(document.createTextNode(r.text));
+      if (C.suffix) { var post = document.createElement("span"); post.className = "post"; post.textContent = C.suffix; big.appendChild(post); }
+      var s = document.createElement("div"); s.className = "sub";
+      s.textContent = (sex === "m" ? "男性 " : "女性 ") + r.label + "の区分（平均" + r.mean.toFixed(C.dec) + C.unit + "、標準偏差" + r.sd.toFixed(C.dec) + "）と比べた推定です。";
+      out.appendChild(big); out.appendChild(s);
+      draw(sex, r, v);
+    }
+    document.getElementById("calc").addEventListener("submit", function (e) { e.preventDefault(); show(); });
+
+    // 開いた時点で、入力欄に入っている例の値で計算し、図1も同じ値で描く
+    show();
+  })();
+  </script>
+</body>
+</html>
